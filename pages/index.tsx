@@ -13,8 +13,18 @@ export default function Home() {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <PasswordGenerator />
-      <Footer />
+      <div className="flex flex-col md:justify-center h-full font-mono bg-gradient-to-b from-slate-900 to-black items-center md:items-baseline">
+        <div className="text-center md:text-left w-3/4 md:w-2/4 text-white py-6">
+          <h1 className="text-4xl md:text-5xl pb-3">Super Gen Pass!</h1>
+          <p className="text-lg md:text-2xl">
+            A way for you to be more secure, and not have a single point of
+            failure while using a password manager. Generate a password for each
+            of the domains you use using a master password.
+          </p>
+        </div>
+        <PasswordGenerator />
+        <Footer />
+      </div>
     </>
   );
 }

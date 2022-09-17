@@ -1,22 +1,26 @@
 import Image from "next/image";
 
+import { useGithubUserData } from "../../hooks/useGithubUserData";
+
 export const Footer = () => {
+  const { avatar_url } = useGithubUserData();
+
   return (
-    <footer>
+    <footer className="absolute bottom-0 bg-gradient-to-t from-black  text-white underline text-sm md:text-base w-full flex items-center justify-between p-6">
       <a
         href="https://github.com/vitor-hbr"
         target="_blank"
         rel="noopener noreferrer"
+        className="flex items-center"
       >
-        Made by{" "}
-        <span>
-          <Image
-            src="/vitor-profile.png"
-            alt="My profile picture"
-            width={60}
-            height={60}
-          />
-        </span>
+        <Image
+          src={avatar_url}
+          alt="My profile picture"
+          width={60}
+          height={60}
+          className="rounded-full"
+        />
+        <span className="pl-3">Made by Vitor</span>
       </a>
 
       <a

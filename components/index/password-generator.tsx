@@ -34,9 +34,7 @@ export const PasswordGenerator = () => {
   }, [masterPassword, url]);
 
   return (
-    <main className="flex flex-col items-center justify-center bg-violet-600">
-      <h1 className="">Get your hashed password!</h1>
-
+    <main className="flex flex-col items-center justify-center bg-gradient-to-b from-violet-600 text-white w-10/12 rounded-lg p-4">
       <span>
         <label htmlFor="domainToggle">Use only domain?</label>
         <input
