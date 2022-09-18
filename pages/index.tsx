@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Vitor's Super Gen Pass</title>
+        <title>Vitor&apos;s Super Gen Pass</title>
         <meta
           name="description"
           content="A Next.js application providing password hashing using supergenpass-lib"

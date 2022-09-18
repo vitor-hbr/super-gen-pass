@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import { generate } from "supergenpass-lib";
+
+import {
+  FaKey,
+  FaEyeSlash,
+  FaEye,
+  FaEnvelope,
+  FaLock,
+  FaLockOpen,
+  FaCompressAlt,
+  FaClipboard,
+  FaClipboardCheck,
+  FaCog,
+} from "react-icons/fa";
 
 export const PasswordGenerator = () => {
   const [masterPassword, setMasterPassword] = useState("");
@@ -11,11 +23,15 @@ export const PasswordGenerator = () => {
   const [isGeneratedPasswordVisible, setIsGeneratedPasswordVisible] =
     useState(false);
   const [copied, setCopied] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [generatedSize, setGeneratedSize] = useState(14);
 
   const generatePassword = () => {
-    generate(masterPassword, url, {}, (password) =>
-      setGeneratedPassword(password)
-    );
+    if (masterPassword && url) {
+      generate(masterPassword, url, {}, (password) =>
+        setGeneratedPassword(password)
+      );
+    }
     (document.activeElement as HTMLElement).blur();
   };
 
@@ -34,42 +50,69 @@ export const PasswordGenerator = () => {
   }, [masterPassword, url]);
 
   return (
-    <main className="flex flex-col items-center justify-center bg-gradient-to-b from-violet-600 text-white w-10/12 rounded-lg p-4">
-      <span>
-        <label htmlFor="domainToggle">Use only domain?</label>
-        <input
-          type="checkbox"
-          id="domainToggle"
-          defaultChecked={onlyDomain}
-          onChange={() => setOnlyDomain((s) => !s)}
-        />
-      </span>
-
-      <span>
+    <main className="flex flex-col items-center justify-center bg-gradient-to-b from-violet-600 via-purple-500  text-white w-10/12 rounded-lg p-4">
+      <span className="flex rounded-lg bg-white p-3 outline outline-offset-2 outline-0 focus-within:outline-1 w-full max-w-xs mb-4 outline-violet-900">
         <input
           type={isMasterPasswordVisible ? "text" : "password"}
           placeholder="Enter your master password"
           value={masterPassword}
           onChange={(e) => setMasterPassword(e.target.value)}
+          className="text-sm w-full outline-none text-black"
         />
-        <button onClick={() => setIsMasterPasswordVisible((s) => !s)}>
-          <Image
-            src={`/visibility${!isMasterPasswordVisible ? "_off" : ""}.svg`}
-            width={32}
-            height={32}
-          />
+        <button
+          onClick={() => setIsMasterPasswordVisible((s) => !s)}
+          className="pl-3"
+        >
+          {!isMasterPasswordVisible ? (
+            <FaEyeSlash width={32} height={32} className="text-violet-600" />
+          ) : (
+            <FaEye width={32} height={32} />
+          )}
         </button>
       </span>
 
-      <span>
+      <span className="flex rounded-lg bg-white p-3 outline outline-offset-2 outline-0 focus-within:outline-1 w-full max-w-xs">
         <input
           type="text"
           placeholder="Enter the address of the site"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
+          className="text-sm w-full outline-none text-black"
         />
       </span>
 
+      <button onClick={() => setShowSettings((s) => !s)}>
+        <FaCog width={32} height={32} />
+      </button>
+
+      {showSettings && (
+        <>
+          <span>
+            <label htmlFor="domainToggle">Use only domain?</label>
+            <input
+              type="checkbox"
+              id="domainToggle"
+              defaultChecked={onlyDomain}
+              onChange={() => setOnlyDomain((s) => !s)}
+            />
+          </span>
+          <span>
+            <label htmlFor="generatedLength">
+              Length of generated password
+            </label>
+            <input
+              type="range"
+              id="generatedLength"
+              onChange={(e) => setGeneratedSize(parseInt(e.target.value))}
+              min={4}
+              max={24}
+              step={0.1}
+              value={generatedSize}
+            />
+            <span>{generatedSize}</span>
+          </span>
+        </>
+      )}
       <span>
         {generatedPassword ? (
           <>
@@ -82,17 +125,17 @@ export const PasswordGenerator = () => {
                 : maskPassword(generatedPassword)}
             </button>
             <button onClick={() => copyToClipboard()}>
-              <Image
-                src={copied ? `/clipboard_copied.svg` : `/clipboard.svg`}
-                width={32}
-                height={32}
-              />
+              {copied ? (
+                <FaClipboardCheck width={32} height={32} />
+              ) : (
+                <FaClipboard width={32} height={32} />
+              )}
             </button>
           </>
         ) : (
           <button onClick={() => generatePassword()}>
             Generate password
-            <Image src={`/key.svg`} width={32} height={32} />
+            {<FaKey width={32} height={32} />}
           </button>
         )}
       </span>
