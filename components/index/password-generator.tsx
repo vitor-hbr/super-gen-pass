@@ -28,7 +28,7 @@ export const PasswordGenerator = () => {
 
   const generatePassword = () => {
     if (masterPassword && url) {
-      generate(masterPassword, url, {}, (password) =>
+      generate(masterPassword, url, { length: generatedSize }, (password) =>
         setGeneratedPassword(password)
       );
     }
@@ -47,84 +47,71 @@ export const PasswordGenerator = () => {
   useEffect(() => {
     setGeneratedPassword("");
     setCopied(false);
-  }, [masterPassword, url]);
+  }, [masterPassword, url, generatedSize, onlyDomain]);
 
   return (
-    <main className="flex flex-col items-center justify-center bg-gradient-to-b from-violet-600 via-purple-500  text-white w-10/12 rounded-lg p-4">
-      <span className="flex rounded-lg bg-white p-3 outline outline-offset-2 outline-0 focus-within:outline-1 w-full max-w-xs mb-4 outline-violet-900">
+    <main className="flex flex-col items-center justify-center bg-gradient-to-b from-violet-600 via-purple-500  text-white w-10/12 rounded-lg p-4 pb-8 max-w-sm md:my-auto select-none">
+      <span className="flex rounded-lg bg-white p-3 outline outline-offset-4 outline-0 focus-within:outline-1 w-full max-w-xs mb-4 outline-gray-900">
         <input
           type={isMasterPasswordVisible ? "text" : "password"}
           placeholder="Enter your master password"
           value={masterPassword}
           onChange={(e) => setMasterPassword(e.target.value)}
-          className="text-sm w-full outline-none text-black"
+          className="text-sm w-full outline-none text-slate-900"
         />
         <button
           onClick={() => setIsMasterPasswordVisible((s) => !s)}
           className="pl-3"
         >
           {!isMasterPasswordVisible ? (
-            <FaEyeSlash width={32} height={32} className="text-violet-600" />
+            <FaEyeSlash
+              width={32}
+              height={32}
+              className="text-violet-600 hover:text-slate-900 transition-all"
+            />
           ) : (
-            <FaEye width={32} height={32} />
+            <FaEye
+              width={32}
+              height={32}
+              className="text-violet-600 hover:text-slate-900 transition-all"
+            />
           )}
         </button>
       </span>
 
-      <span className="flex rounded-lg bg-white p-3 outline outline-offset-2 outline-0 focus-within:outline-1 w-full max-w-xs">
+      <span className="flex rounded-lg bg-white p-3 outline outline-offset-4 outline-0 focus-within:outline-1 w-full max-w-xs mb-4 outline-gray-900">
         <input
           type="text"
           placeholder="Enter the address of the site"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          className="text-sm w-full outline-none text-black"
+          className="text-sm w-full outline-none text-slate-900"
         />
       </span>
-
-      <button onClick={() => setShowSettings((s) => !s)}>
-        <FaCog width={32} height={32} />
-      </button>
-
-      {showSettings && (
-        <>
-          <span>
-            <label htmlFor="domainToggle">Use only domain?</label>
-            <input
-              type="checkbox"
-              id="domainToggle"
-              defaultChecked={onlyDomain}
-              onChange={() => setOnlyDomain((s) => !s)}
-            />
-          </span>
-          <span>
-            <label htmlFor="generatedLength">
-              Length of generated password
-            </label>
-            <input
-              type="range"
-              id="generatedLength"
-              onChange={(e) => setGeneratedSize(parseInt(e.target.value))}
-              min={4}
-              max={24}
-              step={0.1}
-              value={generatedSize}
-            />
-            <span>{generatedSize}</span>
-          </span>
-        </>
-      )}
-      <span>
-        {generatedPassword ? (
+      <span className="flex">
+        {!generatedPassword ? (
+          <button
+            onClick={() => generatePassword()}
+            className="bg-white hover:bg-slate-900 p-3 rounded-lg text-violet-600 hover:text-white flex flex-row items-center justify-center transition-all"
+          >
+            <label className="pr-3 cursor-pointer">Generate Password</label>
+            {<FaKey width={32} height={32} />}
+          </button>
+        ) : (
           <>
             <button
               onFocus={() => setIsGeneratedPasswordVisible(true)}
               onBlur={() => setIsGeneratedPasswordVisible(false)}
+              className="bg-white hover:bg-slate-900 p-3 rounded-lg rounded-r-none text-violet-600 hover:text-white transition-all"
             >
               {isGeneratedPasswordVisible
                 ? generatedPassword
                 : maskPassword(generatedPassword)}
             </button>
-            <button onClick={() => copyToClipboard()}>
+            <button
+              onClick={() => copyToClipboard()}
+              className="bg-white hover:bg-slate-900 p-3 rounded-lg rounded-l-none text-violet-600 hover:text-white"
+            >
               {copied ? (
                 <FaClipboardCheck width={32} height={32} />
               ) : (
@@ -132,13 +119,48 @@ export const PasswordGenerator = () => {
               )}
             </button>
           </>
-        ) : (
-          <button onClick={() => generatePassword()}>
-            Generate password
-            {<FaKey width={32} height={32} />}
-          </button>
         )}
+        <button onClick={() => setShowSettings((s) => !s)} className="pl-3">
+          <FaCog
+            width={32}
+            height={32}
+            className="hover:text-slate-900 transition-all"
+          />
+        </button>
       </span>
+
+      {showSettings && (
+        <section className="flex flex-col pt-5 w-full">
+          <span className="pb-3">
+            <label htmlFor="domainToggle" className="pr-3">
+              Use Only Domain?
+            </label>
+            <input
+              type="checkbox"
+              id="domainToggle"
+              defaultChecked={onlyDomain}
+              onChange={() => setOnlyDomain((s) => !s)}
+              className="max-w-xs cursor-pointer"
+            />
+          </span>
+          <span className="flex">
+            <label className="pr-3">Length of Password</label>
+            <div className="flex flex-col justify-center items-center ">
+              <input
+                type="range"
+                id="generatedLength"
+                onChange={(e) => setGeneratedSize(parseInt(e.target.value))}
+                min={4}
+                max={24}
+                step={0.1}
+                value={generatedSize}
+                className="cursor-grab w-[115px] md:w-[180px]"
+              />
+              <span>{generatedSize}</span>
+            </div>
+          </span>
+        </section>
+      )}
     </main>
   );
 };
