@@ -6,7 +6,7 @@ export const Footer = () => {
   const { avatar_url } = useGithubUserData();
 
   return (
-    <footer className="absolute bottom-0 bg-gradient-to-t from-black  text-white underline text-sm md:text-base w-full flex items-center justify-between p-6">
+    <footer className="fixed bottom-0 bg-gradient-to-t from-black  text-white underline text-sm md:text-base w-full flex items-center justify-between p-6">
       <a
         href="https://github.com/vitor-hbr"
         target="_blank"

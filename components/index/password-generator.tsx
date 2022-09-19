@@ -50,8 +50,8 @@ export const PasswordGenerator = () => {
   }, [masterPassword, url, generatedSize, onlyDomain]);
 
   return (
-    <main className="flex flex-col items-center justify-center bg-gradient-to-b from-violet-600 via-purple-500  text-white w-10/12 rounded-lg p-4 pb-8 max-w-sm md:my-auto select-none">
-      <span className="flex rounded-lg bg-white p-3 outline outline-offset-4 outline-0 focus-within:outline-1 w-full max-w-xs mb-4 outline-gray-900">
+    <main className="flex flex-col items-center justify-center bg-gradient-to-b from-violet-600 via-purple-900 text-white w-11/12 rounded-lg p-4 pb-12 max-w-sm md:my-auto select-none">
+      <span className="flex rounded-lg bg-white p-3 outline outline-offset-4 outline-0 focus-within:outline-1 w-full max-w-xs mb-4 outline-gray-900 drop-shadow-sm">
         <input
           type={isMasterPasswordVisible ? "text" : "password"}
           placeholder="Enter your master password"
@@ -61,7 +61,7 @@ export const PasswordGenerator = () => {
         />
         <button
           onClick={() => setIsMasterPasswordVisible((s) => !s)}
-          className="pl-3"
+          className="ml-3 flex items-center justify-center"
         >
           {!isMasterPasswordVisible ? (
             <FaEyeSlash
@@ -79,7 +79,7 @@ export const PasswordGenerator = () => {
         </button>
       </span>
 
-      <span className="flex rounded-lg bg-white p-3 outline outline-offset-4 outline-0 focus-within:outline-1 w-full max-w-xs mb-4 outline-gray-900">
+      <span className="flex rounded-lg bg-white p-3 outline outline-offset-4 outline-0 focus-within:outline-1 w-full max-w-xs mb-4 outline-gray-900 drop-shadow-sm">
         <input
           type="text"
           placeholder="Enter the address of the site"
@@ -88,7 +88,7 @@ export const PasswordGenerator = () => {
           className="text-sm w-full outline-none text-slate-900"
         />
       </span>
-      <span className="flex">
+      <span className="flex drop-shadow-sm">
         {!generatedPassword ? (
           <button
             onClick={() => generatePassword()}
@@ -120,7 +120,7 @@ export const PasswordGenerator = () => {
             </button>
           </>
         )}
-        <button onClick={() => setShowSettings((s) => !s)} className="pl-3">
+        <button onClick={() => setShowSettings((s) => !s)} className="p-3">
           <FaCog
             width={32}
             height={32}
