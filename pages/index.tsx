@@ -14,9 +14,11 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="flex flex-col md:flex-row md:justify-around h-full font-mono bg-gradient-to-b from-slate-900 to-black items-center p-8 md:p-24 ">
-        <div className="text-center md:text-left w-3/4 md:w-2/4 text-white py-6 max-w-[600px] md:mb-96">
-          <h1 className="text-4xl md:text-5xl pb-3">Super Gen Pass!</h1>
-          <p className="text-lg md:text-2xl">
+        <div className="text-center md:text-left w-3/4 md:w-2/4 text-white py-6 max-w-[600px] md:mb-96 select-none">
+          <h1 className="text-4xl md:text-5xl pb-3 bg-gradient-to-r from-violet-600 via-slate-300  to-purple-400 animate-gradient-text text-transparent font-bold bg-clip-text duration-1000">
+            Super Gen Pass!
+          </h1>
+          <p className="text-lg md:text-2x">
             A way for you to be more secure, and not have a single point of
             failure while using a password manager. Generate a password for each
             of the domains you need, using a master password.

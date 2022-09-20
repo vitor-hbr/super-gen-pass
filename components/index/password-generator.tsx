@@ -13,6 +13,7 @@ import {
   FaClipboardCheck,
   FaCog,
 } from "react-icons/fa";
+import { Checkbox } from "./checkbox";
 
 export const PasswordGenerator = () => {
   const [masterPassword, setMasterPassword] = useState("");
@@ -132,15 +133,13 @@ export const PasswordGenerator = () => {
       {showSettings && (
         <section className="flex flex-col pt-5 w-full">
           <span className="pb-3">
-            <label htmlFor="domainToggle" className="pr-3">
+            <label htmlFor="domainToggle" className="pr-3 cursor-pointer">
               Use Only Domain?
             </label>
-            <input
-              type="checkbox"
-              id="domainToggle"
-              defaultChecked={onlyDomain}
-              onChange={() => setOnlyDomain((s) => !s)}
-              className="max-w-xs cursor-pointer"
+            <Checkbox
+              setChecked={setOnlyDomain}
+              checked={onlyDomain}
+              uuid="domainToggle"
             />
           </span>
           <span className="flex">
@@ -154,7 +153,7 @@ export const PasswordGenerator = () => {
                 max={24}
                 step={0.1}
                 value={generatedSize}
-                className="cursor-grab w-[115px] md:w-[180px]"
+                className="cursor-grab w-[115px] md:w-[180px] bg-white appearance-none rounded h-2"
               />
               <span>{generatedSize}</span>
             </div>

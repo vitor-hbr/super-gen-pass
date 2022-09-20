@@ -9,10 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "nanoid": "^4.0.0",
     "next": "12.3.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.4.0",
+    "sass": "^1.54.9",
     "supergenpass-lib": "^3.0.1"
   },
   "devDependencies": {
