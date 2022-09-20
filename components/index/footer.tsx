@@ -1,14 +1,10 @@
 import Image from "next/image";
 
-import { useGithubUserData } from "../../hooks/useGithubUserData";
-
-export const Footer = () => {
-  const { avatar_url } = useGithubUserData();
-
+export const Footer = ({ avatar_url }) => {
   return (
     <footer className="fixed bottom-0 bg-gradient-to-t from-black  text-white underline text-sm md:text-base w-full flex items-center justify-between p-6">
       <a
-        href="https://github.com/vitor-hbr"
+        href="https://github.com/vitor-hbr/super-gen-pass"
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center"

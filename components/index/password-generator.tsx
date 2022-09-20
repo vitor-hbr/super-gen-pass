@@ -132,7 +132,7 @@ export const PasswordGenerator = () => {
 
       {showSettings && (
         <section className="flex flex-col pt-5 w-full">
-          <span className="pb-3">
+          <span className="pb-5">
             <label htmlFor="domainToggle" className="pr-3 cursor-pointer">
               Use Only Domain?
             </label>
@@ -153,7 +153,7 @@ export const PasswordGenerator = () => {
                 max={24}
                 step={0.1}
                 value={generatedSize}
-                className="cursor-grab w-[115px] md:w-[180px] bg-white appearance-none rounded h-2"
+                className="cursor-grab w-[115px] md:w-[180px] bg-white appearance-none rounded h-2 transition-all"
               />
               <span>{generatedSize}</span>
             </div>

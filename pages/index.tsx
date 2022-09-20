@@ -2,7 +2,7 @@ import Head from "next/head";
 
 import { PasswordGenerator, Footer } from "../components/index/";
 
-export default function Home() {
+export default function Home({ avatar_url }) {
   return (
     <>
       <Head>
@@ -25,8 +25,27 @@ export default function Home() {
           </p>
         </div>
         <PasswordGenerator />
-        <Footer />
+        <Footer avatar_url={avatar_url} />
       </div>
     </>
   );
 }
+
+export const getStaticProps = async () => {
+  const { avatar_url, name, bio, html_url } = await fetch(
+    "https://api.github.com/users/vitor-hbr"
+  )
+    .then((response) => response.json())
+    .catch((error) => {
+      console.error(error);
+    });
+
+  return {
+    props: {
+      avatar_url,
+      name,
+      bio,
+      html_url,
+    },
+  };
+};
