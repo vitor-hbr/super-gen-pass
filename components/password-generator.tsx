@@ -67,7 +67,7 @@ export const PasswordGenerator = () => {
   }, [masterPassword, url, generatedSize, onlyDomain]);
 
   return (
-    <main className="flex flex-col items-center justify-center bg-gradient-to-b from-violet-600 via-purple-900 text-white w-11/12 rounded-lg p-4 pb-12 max-w-sm md:my-auto select-none">
+    <main className="flex flex-col items-center justify-center bg-gradient-to-b from-violet-600 via-purple-900 text-white w-11/12 rounded-lg p-4 pb-12 max-w-sm md:my-auto select-none mb-[108px]">
       <Toaster />
       <span className="flex rounded-lg bg-white p-3 outline outline-offset-4 outline-0 focus-within:outline-1 w-full max-w-xs mb-4 outline-gray-900 drop-shadow-sm">
         <input
