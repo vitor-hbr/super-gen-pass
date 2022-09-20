@@ -153,7 +153,7 @@ export const PasswordGenerator = () => {
                 max={24}
                 step={0.1}
                 value={generatedSize}
-                className="cursor-grab w-[115px] md:w-[180px] bg-white appearance-none rounded h-2 transition-all"
+                className="cursor-pointer w-[115px] md:w-[180px] bg-white appearance-none rounded h-2 transition-all"
               />
               <span>{generatedSize}</span>
             </div>
