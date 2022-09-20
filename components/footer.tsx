@@ -24,7 +24,7 @@ export const Footer = ({ avatar_url }) => {
         target="_blank"
         rel="noopener noreferrer"
       >
-        Supergenpass package
+        Supergenpass library
       </a>
     </footer>
   );
