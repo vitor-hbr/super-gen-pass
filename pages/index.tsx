@@ -1,6 +1,6 @@
 import Head from "next/head";
 
-import { PasswordGenerator, Footer } from "../components/index/";
+import { PasswordGenerator, Footer } from "../components";
 
 export default function Home({ avatar_url }) {
   return (
