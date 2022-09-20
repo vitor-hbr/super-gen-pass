@@ -39,6 +39,7 @@ export const PasswordGenerator = () => {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(generatedPassword);
     setCopied(true);
+    onCopied();
   };
 
   const maskPassword = (password: string) => {
@@ -60,6 +61,8 @@ export const PasswordGenerator = () => {
         secondary: "#fff",
       },
     });
+
+  const onCopied = () => toast("Copied to clipboard!", { icon: "📋" });
 
   useEffect(() => {
     setGeneratedPassword("");
