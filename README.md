@@ -1,5 +1,5 @@
 # SuperGenPass
-A web app made for generating passwords combining a master password and a address, hosted [here](https://super-gen-pass.vercel.app/) 💻
+A web app made for generating passwords combining a master password and a address, hosted [here](https://supergenpass.vercel.app/) 💻
 
 ### Made Using -
 - ⚛ Framework [NextJS](https://nextjs.org/)
