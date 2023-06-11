@@ -1,35 +1,28 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { generate } from "supergenpass-lib";
+import { TOAST_MESSAGES } from "../utils/textConstants";
+import { replaceAt } from "../utils/replaceAt";
 
 export type usePasswordGeneratorProps = {
-  missingInputMessage?: string;
-  successMessage?: string;
-  copiedMessage?: string;
-  initialOnlyDomain?: boolean;
-  initialGeneratedSize?: number;
+  initialPairs?: Pair[];
 };
 
 export type Pair = {
   url: string;
   password: string;
+  options: {
+    onlyDomain: boolean;
+    generatedSize: number;
+    forceSpecialCharacter: boolean;
+  };
 };
 
 export const usePasswordGenerator = ({
-  successMessage = "Password generated!",
-  missingInputMessage = "Please, fill the 'Master Password' and 'Address' fields",
-  copiedMessage = "Copied to clipboard!",
-  initialOnlyDomain,
-  initialGeneratedSize,
+  initialPairs,
 }: usePasswordGeneratorProps) => {
   const [masterPassword, setMasterPassword] = useState("");
-  const [pairs, setPairs] = useState<Pair[]>([]);
-  const [onlyDomain, setOnlyDomain] = useState(initialOnlyDomain ?? false);
-  const [generatedSize, setGeneratedSize] = useState(
-    initialGeneratedSize ?? 14
-  );
-  const [hasGenerated, setHasGenerated] = useState(false);
-  const [lastCopiedIndex, setLastCopiedIndex] = useState<number>(null);
+  const [pairs, setPairs] = useState<Pair[]>(initialPairs || []);
 
   const maskPassword = (password: string) => {
     return password.replace(/./g, "*");
@@ -43,9 +36,14 @@ export const usePasswordGenerator = ({
           generate(
             masterPassword,
             pair.url,
-            { length: generatedSize, onlyDomain },
+            {
+              length: pair.options.generatedSize,
+              onlyDomain: pair.options.onlyDomain,
+            },
             (password) => {
-              resolve(password);
+              if (!pair.options.forceSpecialCharacter) resolve(password);
+
+              resolve(replaceAt(password, password.length - 1, "@"));
             }
           );
         });
@@ -54,21 +52,14 @@ export const usePasswordGenerator = ({
       }
       setPairs(newPairs);
       onCreatedPasswordToast();
-      setHasGenerated(true);
     } else {
-      onMissingInputToast(missingInputMessage);
+      onMissingInputToast(TOAST_MESSAGES.missingInput);
     }
     (document.activeElement as HTMLElement).blur();
   };
 
-  const copyToClipboard = async (urlIndex: number) => {
-    navigator.clipboard.writeText(pairs[urlIndex].password);
-    setLastCopiedIndex(urlIndex);
-    onCopiedToast();
-  };
-
   const onCreatedPasswordToast = () =>
-    toast.success("Password(s) created!", {
+    toast.success(TOAST_MESSAGES.success, {
       iconTheme: {
         primary: "#7c3aed",
         secondary: "#fff",
@@ -83,27 +74,12 @@ export const usePasswordGenerator = ({
       },
     });
 
-  const onCopiedToast = () => toast(copiedMessage, { icon: "📋" });
-
-  useEffect(() => {
-    setLastCopiedIndex(null);
-    setHasGenerated(false);
-  }, [masterPassword, generatedSize, onlyDomain]);
-
   return {
     masterPassword,
     setMasterPassword,
     pairs,
     setPairs,
-    onlyDomain,
-    setOnlyDomain,
-    generatedSize,
-    setGeneratedSize,
-    lastCopiedIndex,
     maskPassword,
     generatePasswords,
-    copyToClipboard,
-    hasGenerated,
-    setHasGenerated,
   };
 };

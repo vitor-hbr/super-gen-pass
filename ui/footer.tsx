@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export function Footer({ avatar_url }: { avatar_url: string }) {
   return (
-    <footer className="fixed bottom-0 bg-gradient-to-t from-black  text-white underline text-sm md:text-base w-full flex items-center justify-between p-6">
+    <footer className="text-sm md:text-base fixed bottom-0  flex w-full items-center justify-between bg-gradient-to-t from-black p-6 text-white underline">
       <a
         href="https://github.com/vitor-hbr/super-gen-pass"
         target="_blank"
@@ -24,7 +24,7 @@ export function Footer({ avatar_url }: { avatar_url: string }) {
         target="_blank"
         rel="noopener noreferrer"
       >
-        Supergenpass library
+        SuperGenPass library
       </a>
     </footer>
   );

@@ -1,3 +1,3 @@
-export { Footer } from "./footer";
-export { Checkbox } from "./checkbox";
-export { PasswordGenerator } from "./password-generator";
+export { Footer } from "./Footer";
+export { Checkbox } from "./Checkbox";
+export { SinglePasswordGenerator } from "./SinglePasswordGenerator";

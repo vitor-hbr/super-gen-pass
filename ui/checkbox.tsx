@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 
 export interface CheckboxProps {
   uuid: string;
-  setChecked: (checked: any) => void;
+  onChange: (checked: boolean) => void;
   checked?: boolean;
   className?: string;
 }
@@ -11,16 +10,16 @@ export interface CheckboxProps {
 export const Checkbox = ({
   uuid,
   checked,
-  setChecked,
+  onChange,
   className,
 }: CheckboxProps) => {
   return (
     <button
       id={uuid}
-      onClick={() => setChecked((checked) => !checked)}
-      className={`w-8 h-8 bg-white hover:bg-slate-900 rounded p-2 text-violet-600 hover:text-white transition-all ${className}`}
+      onClick={() => onChange(!checked)}
+      className={`grid h-6 w-6 place-items-center rounded bg-white p-1 text-violet-600 transition-all hover:bg-slate-900 hover:text-white ${className}`}
     >
-      {checked && <FaCheck />}
+      {checked && <FaCheck className="h-4 w-4" />}
     </button>
   );
 };

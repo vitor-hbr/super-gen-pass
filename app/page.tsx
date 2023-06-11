@@ -1,10 +1,10 @@
-import { PasswordGenerator } from "../ui";
+import { SinglePasswordGenerator } from "../ui";
 
 export default async function Page() {
   return (
-    <div className="flex flex-1 flex-col md:flex-row md:justify-around font-mono items-center p-4 md:px-12 ">
-      <div className="text-center md:text-left w-full md:w-2/4 text-white py-6 max-w-[600px] md:mb-48 select-none">
-        <h1 className="pb-3 bg-gradient-to-r from-violet-600 via-slate-300  to-purple-400 animate-gradient-text text-transparent font-bold bg-clip-text duration-1000">
+    <div className="font-mono flex flex-1 flex-col items-center p-4 md:flex-row md:justify-around md:px-12 ">
+      <div className="md:mb-48 w-full max-w-[600px] select-none py-6 text-center text-white md:w-2/4 md:text-left">
+        <h1 className="animate-gradient-text bg-gradient-to-r from-violet-600 via-slate-300  to-purple-400 bg-clip-text pb-3 font-bold text-transparent duration-1000">
           Super Gen Pass!
         </h1>
         <p>
@@ -13,7 +13,7 @@ export default async function Page() {
           of the domains you need, using a master password.
         </p>
       </div>
-      <PasswordGenerator />
+      <SinglePasswordGenerator />
     </div>
   );
 }
