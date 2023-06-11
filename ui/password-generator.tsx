@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+"use client";
+
+import React, { useState } from "react";
 import {
   FaKey,
   FaEyeSlash,
@@ -7,7 +9,7 @@ import {
   FaClipboardCheck,
   FaCog,
 } from "react-icons/fa";
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 import { Checkbox } from "./checkbox";
 import { usePasswordGenerator } from "../hooks/usePasswordGenerator";
@@ -35,7 +37,7 @@ export const PasswordGenerator = () => {
   const [showSettings, setShowSettings] = useState(false);
 
   return (
-    <main className="flex flex-col items-center justify-center bg-gradient-to-b from-violet-600 via-purple-900 text-white w-11/12 rounded-lg p-4 pb-12 max-w-sm md:my-auto select-none mb-[108px]">
+    <main className="flex flex-col items-center justify-center bg-gradient-to-b from-violet-500 via-violet-700 to-violet-900 text-white w-full rounded-lg p-6 max-w-sm select-none">
       <Toaster />
       <span className="flex rounded-lg bg-white p-3 outline outline-offset-4 outline-0 focus-within:outline-1 w-full max-w-xs mb-4 outline-gray-900 drop-shadow-sm">
         <input
@@ -89,8 +91,7 @@ export const PasswordGenerator = () => {
         ) : (
           <>
             <button
-              onFocus={() => setIsGeneratedPasswordVisible(true)}
-              onBlur={() => setIsGeneratedPasswordVisible(false)}
+              onClick={() => setIsGeneratedPasswordVisible((prev) => !prev)}
               className="bg-white hover:bg-slate-900 p-3 rounded-lg rounded-r-none text-violet-600 hover:text-white transition-all"
             >
               {isGeneratedPasswordVisible

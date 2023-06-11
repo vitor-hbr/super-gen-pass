@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export const Footer = ({ avatar_url }) => {
+export function Footer({ avatar_url }: { avatar_url: string }) {
   return (
     <footer className="fixed bottom-0 bg-gradient-to-t from-black  text-white underline text-sm md:text-base w-full flex items-center justify-between p-6">
       <a
@@ -28,4 +28,4 @@ export const Footer = ({ avatar_url }) => {
       </a>
     </footer>
   );
-};
+}

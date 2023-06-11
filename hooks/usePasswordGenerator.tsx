@@ -4,6 +4,7 @@ import { generate } from "supergenpass-lib";
 
 export type usePasswordGeneratorProps = {
   missingInputMessage?: string;
+  successMessage?: string;
   copiedMessage?: string;
   initialOnlyDomain?: boolean;
   initialGeneratedSize?: number;
@@ -15,6 +16,7 @@ export type Pair = {
 };
 
 export const usePasswordGenerator = ({
+  successMessage = "Password generated!",
   missingInputMessage = "Please, fill the 'Master Password' and 'Address' fields",
   copiedMessage = "Copied to clipboard!",
   initialOnlyDomain,
@@ -43,7 +45,6 @@ export const usePasswordGenerator = ({
             pair.url,
             { length: generatedSize, onlyDomain },
             (password) => {
-              console.log("Teste");
               resolve(password);
             }
           );

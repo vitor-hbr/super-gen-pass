@@ -2,18 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body, #__next {
-    min-height: 100vh;
-}
-
-#__next {
-    display: flex;
-    flex-direction: column;
-}
-
 *{
     outline-color: #111827;
 }
+
+html {
+    --s: 1000px; /* control the size */
+    --c1: #111827;
+    --c2: #0b101a;
+    
+    --_g: var(--c1) 90deg,var(--c2) 0 135deg,#0000 0;
+    background:
+      conic-gradient(from  -45deg at calc(100%/3)   calc(100%/3)  ,var(--c1) 90deg,#0000 0 ),
+      conic-gradient(from -135deg at calc(100%/3)   calc(2*100%/3),var(--_g)),
+      conic-gradient(from  135deg at calc(2*100%/3) calc(2*100%/3),var(--_g)),
+      conic-gradient(from   45deg at calc(2*100%/3) calc(100%/3)  ,var(--_g),var(--c1) 0 225deg,var(--c2) 0);
+    background-size: var(--s) var(--s);
+  }
 
 input[type='range'] {
     &::-webkit-slider-thumb {
@@ -58,3 +63,33 @@ input[type='range'] {
         }
     }
 }
+
+@layer base {
+    h1 {
+      @apply text-h1-mobile;
+    }
+    h3 {
+      @apply text-h3-mobile;
+    }
+    h5 {
+      @apply text-h5-mobile;
+    }
+    p {
+      @apply text-p-mobile;
+    }
+  
+    @screen lg {
+      h1 {
+        @apply text-h1-desktop;
+      }
+      h3 {
+        @apply text-h3-desktop;
+      }
+      h5 {
+        @apply text-h5-desktop;
+      }
+      p {
+        @apply text-p-desktop;
+      }
+    }
+  }
