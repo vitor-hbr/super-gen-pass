@@ -1,8 +1,9 @@
 import { Metadata } from "next";
 import { Nunito } from "next/font/google";
+import { getServerSession } from "next-auth";
 
-import { Footer } from "../ui";
 import "../styles/globals.scss";
+import { Footer } from "../ui";
 
 const nunitoFont = Nunito({
   subsets: ["latin"],
@@ -27,7 +28,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className={`${nunitoFont} min-h-screen`}>
-      <body className="min-h-screen flex relative">
+      <body className="relative flex min-h-screen">
         {children}
         <Footer avatar_url={avatar_url} />
       </body>
