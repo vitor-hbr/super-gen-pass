@@ -9,8 +9,8 @@ const TermsPage = () => {
         conditions:
       </p>
       <p>
-        1. You acknowledge that this project is provided on an "as is" basis,
-        without warranties of any kind, express or implied.
+        1. You acknowledge that this project is provided on an &quot;as is&quot;
+        basis, without warranties of any kind, express or implied.
       </p>
       <p>
         2. You understand that the project is maintained by a solo developer and
