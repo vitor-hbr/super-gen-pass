@@ -2,8 +2,10 @@ import React from "react";
 
 const TermsPage = () => {
   return (
-    <>
-      <h1>Terms of Service of SuperGenPass</h1>
+    <section className="flex flex-col gap-4 p-7 text-white lg:p-11">
+      <h3 className="animate-gradient-text bg-gradient-to-r from-violet-600 via-slate-300  to-purple-400 bg-clip-text pb-3 font-bold text-transparent duration-1000">
+        Terms of Service of SuperGenPass
+      </h3>
       <p>
         By using this open-source project, you agree to the following terms and
         conditions:
@@ -36,7 +38,7 @@ const TermsPage = () => {
         These terms of service may be updated from time to time, and it is your
         responsibility to review and comply with the latest version.
       </p>
-    </>
+    </section>
   );
 };
 

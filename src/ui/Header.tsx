@@ -6,15 +6,16 @@ import Image from "next/image";
 export const Header = () => {
   const { data } = useSession();
   const userData = data?.user;
+
   return (
-    <header className="flex items-center justify-between bg-gray-800 p-4">
-      <h1 className="text-2xl font-bold text-white">Super Gen Pass</h1>
+    <header className="text-sm md:text-base sticky top-0 flex w-full items-center justify-end bg-gradient-to-b from-black p-6 text-white underline">
       {userData && (
         <Image
           src={userData.image}
           alt="Profile Picture"
-          width={64}
-          height={64}
+          width={56}
+          height={56}
+          className="rounded-full"
         />
       )}
       {!userData && (

@@ -32,7 +32,7 @@ export default async function RootLayout({
       <body className="flex min-h-screen flex-col">
         <AuthProvider>
           <Header />
-          <main className="flex h-full">{children}</main>
+          <main className="flex flex-grow">{children}</main>
           <Footer avatar_url={avatar_url} />
         </AuthProvider>
       </body>
