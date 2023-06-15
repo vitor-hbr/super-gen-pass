@@ -46,11 +46,14 @@ export const Header = () => {
           alt="Profile Picture"
           width={56}
           height={56}
-          className=" justify-self-end rounded-full"
+          className="justify-self-end rounded-full"
         />
       )}
       {!userData && (
-        <button className="btn btn-primary" onClick={() => signIn()}>
+        <button
+          className="btn btn-primary justify-self-end"
+          onClick={() => signIn()}
+        >
           Sign In
         </button>
       )}
