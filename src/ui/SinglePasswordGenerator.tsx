@@ -1,18 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  FaKey,
-  FaEyeSlash,
-  FaEye,
-  FaClipboard,
-  FaClipboardCheck,
-  FaCog,
-} from "react-icons/fa";
+import { FaKey, FaClipboard, FaClipboardCheck, FaCog } from "react-icons/fa";
 import { Toaster } from "react-hot-toast";
 import autoAnimate from "@formkit/auto-animate";
 
 import { Checkbox } from "./Checkbox";
+import { PasswordInput } from "./PasswordInput";
 import { usePasswordGenerator, useClipboard } from "../hooks";
 
 export const SinglePasswordGenerator = () => {
@@ -37,7 +31,6 @@ export const SinglePasswordGenerator = () => {
     ],
   });
   const { clipboardText, copyToClipboard } = useClipboard();
-  const [isMasterPasswordVisible, setIsMasterPasswordVisible] = useState(false);
   const [isGeneratedPasswordVisible, setIsGeneratedPasswordVisible] =
     useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -55,33 +48,11 @@ export const SinglePasswordGenerator = () => {
       ref={containerRef}
     >
       <Toaster />
-      <span className="mb-4 flex w-full max-w-xs rounded-lg bg-white p-3 outline outline-0 outline-offset-4 outline-gray-900 drop-shadow-sm focus-within:outline-1">
-        <input
-          type={isMasterPasswordVisible ? "text" : "password"}
-          placeholder="Enter your master password"
-          value={masterPassword}
-          onChange={(e) => setMasterPassword(e.target.value)}
-          className="text-sm w-full text-slate-900 outline-none"
-        />
-        <button
-          onClick={() => setIsMasterPasswordVisible((s) => !s)}
-          className="ml-3 flex items-center justify-center"
-        >
-          {!isMasterPasswordVisible ? (
-            <FaEyeSlash
-              width={32}
-              height={32}
-              className="text-violet-600 transition-all hover:text-slate-900"
-            />
-          ) : (
-            <FaEye
-              width={32}
-              height={32}
-              className="text-violet-600 transition-all hover:text-slate-900"
-            />
-          )}
-        </button>
-      </span>
+      <PasswordInput
+        onChange={(value) => setMasterPassword(value)}
+        value={masterPassword}
+        placeholder="Enter your master password"
+      />
 
       <span className="mb-4 flex w-full max-w-xs rounded-lg bg-white p-3 outline outline-0 outline-offset-4 outline-gray-900 drop-shadow-sm focus-within:outline-1">
         <input
