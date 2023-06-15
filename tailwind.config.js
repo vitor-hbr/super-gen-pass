@@ -26,7 +26,8 @@ module.exports = {
       },
     },
     fontFamily: {
-      sans: ["Nunito", "sans-serif"],
+      sans: ["var(--font-nunito)", "sans-serif"],
+      display: ["var(--font-staatliches)", "sans-serif"],
     },
     fontSize: {
       "h1-desktop": [

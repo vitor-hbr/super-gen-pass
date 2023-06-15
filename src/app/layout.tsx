@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { Nunito } from "next/font/google";
+import { Nunito, Staatliches } from "next/font/google";
 
 import "../styles/globals.scss";
 import { Footer } from "../ui";
@@ -9,6 +9,14 @@ import { Header } from "../ui/Header";
 const nunitoFont = Nunito({
   subsets: ["latin"],
   display: "swap",
+  variable: "--font-nunito",
+});
+
+const staatlichesFont = Staatliches({
+  subsets: ["latin"],
+  display: "swap",
+  weight: "400",
+  variable: "--font-staatliches",
 });
 
 export const metadata: Metadata = {
@@ -28,7 +36,10 @@ export default async function RootLayout({
   const { avatar_url } = await getGithubData();
 
   return (
-    <html lang="en" className={`${nunitoFont} min-h-screen`}>
+    <html
+      lang="en"
+      className={`${nunitoFont.variable} ${staatlichesFont.variable} min-h-screen`}
+    >
       <body className="flex min-h-screen flex-col">
         <AuthProvider>
           <Header />

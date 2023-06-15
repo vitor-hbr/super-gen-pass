@@ -6,8 +6,16 @@
     outline-color: #111827;
 }
 
+a {
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 html {
-    --s: 1000px; /* control the size */
+    --s: 600px; /* control the size */
     --c1: #111827;
     --c2: #0b101a;
     
