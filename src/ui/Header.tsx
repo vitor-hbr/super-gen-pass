@@ -1,9 +1,10 @@
 "use client";
 
-import { useSession, signIn } from "next-auth/react";
+import { useSession, signIn, signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { FaHome, FaStore } from "react-icons/fa";
 
 export const Header = () => {
   const { data } = useSession();
@@ -15,11 +16,13 @@ export const Header = () => {
     {
       name: "Home",
       href: "/",
+      icon: FaHome,
     },
     {
       name: "Stored Domains",
       href: "/stored-domains",
       requiresAuth: true,
+      icon: FaStore,
     },
   ];
 
@@ -29,9 +32,17 @@ export const Header = () => {
         {links.map((link) => {
           if (link.requiresAuth && !userData) return null;
 
+          const Icon = link.icon;
           const isActive = pathname === link.href;
           return (
-            <li className={isActive ? "font-bold" : ""}>
+            <li
+              className={`flex items-center gap-2 ${
+                isActive ? "font-semibold" : "font-thin"
+              }`}
+            >
+              <Icon
+                className={`${isActive ? "text-violet-600" : "text-white"}`}
+              />
               <Link href={link.href}>{link.name}</Link>
             </li>
           );
@@ -47,11 +58,12 @@ export const Header = () => {
           width={56}
           height={56}
           className="justify-self-end rounded-full"
+          onClick={() => signOut()}
         />
       )}
       {!userData && (
         <button
-          className="btn btn-primary justify-self-end"
+          className="flex flex-row justify-self-end rounded-lg bg-violet-600 p-3 text-white transition-all hover:bg-slate-900"
           onClick={() => signIn()}
         >
           Sign In

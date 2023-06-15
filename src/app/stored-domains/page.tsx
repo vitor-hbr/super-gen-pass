@@ -7,7 +7,7 @@ const StoredDomainsPage = async () => {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    redirect("/signin?callbackUrl=/stored-domains");
+    redirect("/");
   }
 
   return (
