@@ -1,5 +1,6 @@
 "use client";
 
+import clsx from "clsx";
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
@@ -7,13 +8,24 @@ type Props = {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  className?: string;
 };
 
-export const PasswordInput = ({ onChange, value, placeholder }: Props) => {
+export const PasswordInput = ({
+  onChange,
+  value,
+  placeholder,
+  className,
+}: Props) => {
   const [isVisible, setIsVisible] = useState(true);
 
   return (
-    <span className="mb-4 flex w-full max-w-xs rounded-lg bg-white p-3 outline outline-0 outline-offset-4 outline-gray-900 drop-shadow-sm focus-within:outline-1">
+    <span
+      className={clsx(
+        "flex w-full rounded-lg bg-white p-3 outline outline-0 outline-offset-4 outline-gray-900 drop-shadow-sm focus-within:outline-1",
+        className
+      )}
+    >
       <input
         type={isVisible ? "text" : "password"}
         placeholder={placeholder}

@@ -100,4 +100,8 @@ input[type='range'] {
         @apply text-p-desktop;
       }
     }
+
+    dialog::backdrop {
+      @apply animate-overlay-fade-in fixed left-0 top-0 z-10 h-screen w-screen bg-black/10 backdrop-blur;
+    }
   }

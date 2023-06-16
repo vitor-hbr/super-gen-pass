@@ -3,3 +3,7 @@ export const TOAST_MESSAGES = {
   copied: "Copied to clipboard!",
   missingInput: "Please, fill the 'Master Password' and 'Address' fields",
 }
+
+export const DATABASE_TABLES = {
+  configs: 'config-entry', 
+}
