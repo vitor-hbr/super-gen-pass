@@ -1,44 +1,91 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import {
+    useRef,
+    useState,
+    experimental_useOptimistic as useOptimistic,
+} from "react";
 import { PasswordInput } from "./PasswordInput";
 import { Modal } from "./Modal";
 import { Checkbox } from "./Checkbox";
 import { DialogFormData } from "../utils/models";
+import {
+    onDialogSubmit,
+    removeConfigEntry,
+} from "../app/stored-domains/actions";
+import { ActionType } from "../utils/constants";
 
 type Props = {
-    add: (data: DialogFormData) => Promise<void>;
-    remove: (url: string) => Promise<void>;
-    update: (data: DialogFormData) => Promise<void>;
-    data: DialogFormData[];
+    entries: DialogFormData[];
 };
 
-export const StoredDomainsContent = ({ data, add, remove, update }: Props) => {
+type ActionParams = DialogFormData | { url: string };
+
+function checkActionParamsIsFormData(
+    params: ActionParams
+): params is DialogFormData {
+    return (params as DialogFormData).id !== undefined;
+}
+
+export const StoredDomainsContent = ({ entries }: Props) => {
+
+    const initialDialogState: DialogFormData = {
+            id: "",
+            url: "",
+            length: 14,
+            forceSpecialCharacter: true,
+            onlyDomain: false,
+        }
+
     const [masterPassword, setMasterPassword] = useState("");
-    const [dialogState, setDialogState] = useState<DialogFormData>({
-        url: "",
-        length: 14,
-        forceSpecialCharacter: true,
-        onlyDomain: false,
-    });
-    const [dialogMode, setDialogMode] = useState<"add" | "edit">("add");
+    const [dialogState, setDialogState] = useState<DialogFormData>(initialDialogState);
+    const [dialogMode, setDialogMode] = useState<
+        ActionType.add | ActionType.edit
+    >();
     const dialogRef = useRef<HTMLDialogElement>(null);
-    const [Pending, startTransition] = useTransition();
+    const [optimisticEntries, setOptimisticEntries] = useOptimistic(
+        entries,
+        (
+            entries,
+            {
+                action,
+                params,
+            }: {
+                action: ActionType;
+                params: ActionParams;
+            }
+        ) => {
+            const hasState = checkActionParamsIsFormData(params);
+            
+            if (action === ActionType.add) {
+                if (!hasState) return entries;
+
+                return [...entries, params];
+            }
+            if (action === ActionType.edit) {
+                if (!hasState) return entries;
+
+                return entries.map((item) => {
+                    if (item.id === params.id) {
+                        return params;
+                    }
+                    return item;
+                });
+            }
+            if (action === ActionType.remove) {
+                if (hasState) return entries;
+
+                return entries.filter((item) => item.url !== params.url);
+            }
+        }
+    );
+
     function openDialog() {
         dialogRef.current?.showModal();
     }
 
     function closeDialog() {
         dialogRef.current?.close();
-    }
-
-    async function onDialogSubmit() {
-        if (dialogMode === "add") {
-            await add(dialogState);
-        } else {
-            await update(dialogState);
-        }
-        closeDialog();
     }
 
     return (
@@ -58,13 +105,16 @@ export const StoredDomainsContent = ({ data, add, remove, update }: Props) => {
                 </button>
                 <button
                     className="flex flex-row items-center justify-center rounded-lg bg-violet-600 p-3 text-white transition-all hover:bg-white hover:text-violet-600"
-                    onClick={openDialog}
+                    onClick={() => {
+                        setDialogMode(ActionType.add);
+                        openDialog()
+                    }}
                 >
                     Add New Domain
                 </button>
             </span>
             <div className="flex flex-col gap-2">
-                {data.map((item) => (
+                {optimisticEntries.map((item) => (
                     <div
                         key={item.url}
                         className="flex flex-row items-center justify-between rounded-lg bg-white p-3 text-slate-900"
@@ -74,8 +124,9 @@ export const StoredDomainsContent = ({ data, add, remove, update }: Props) => {
                             <button
                                 className="flex flex-row items-center justify-center rounded-lg bg-violet-600 p-3 text-white transition-all hover:bg-white hover:text-violet-600"
                                 onClick={() => {
+                                    console.log(item)
                                     setDialogState(item);
-                                    setDialogMode("edit");
+                                    setDialogMode(ActionType.edit);
                                     openDialog();
                                 }}
                             >
@@ -83,7 +134,13 @@ export const StoredDomainsContent = ({ data, add, remove, update }: Props) => {
                             </button>
                             <button
                                 className="flex flex-row items-center justify-center rounded-lg bg-violet-600 p-3 text-white transition-all hover:bg-white hover:text-violet-600"
-                                onClick={() => remove(item.url)}
+                                onClick={async () => {
+                                    setOptimisticEntries({
+                                        action: ActionType.remove,
+                                        params: { url: item.url },
+                                    });
+                                    await removeConfigEntry(item.url);
+                                }}
                             >
                                 Remove
                             </button>
@@ -92,7 +149,6 @@ export const StoredDomainsContent = ({ data, add, remove, update }: Props) => {
                 ))}
             </div>
             <Modal ref={dialogRef} className={"rounded-xl bg-gray-100 p-5"}>
-                <form action={() => startTransition(() => onDialogSubmit())}>
                     <span className="mb-4 flex w-full max-w-xs rounded-lg bg-white p-3 outline outline-0 outline-offset-4 outline-gray-900 drop-shadow-sm focus-within:outline-1">
                         <input
                             type="text"
@@ -167,9 +223,18 @@ export const StoredDomainsContent = ({ data, add, remove, update }: Props) => {
                     <span className="flex w-full flex-col gap-2">
                         <button
                             className="flex flex-row items-center justify-center rounded-lg bg-violet-600 p-3 text-white transition-all hover:bg-gray-900"
-                            type="submit"
+                            type="button"
+                            onClick={async (e) => {
+                                    closeDialog();
+                                    setOptimisticEntries({
+                                       action: dialogMode,
+                                       params: dialogState,
+                                   });
+                                   await onDialogSubmit(dialogMode, dialogState)
+                                   setDialogState(initialDialogState);
+                            }}
                         >
-                            Create New Entry
+                            {dialogMode === ActionType.add ? "Create New Entry" : "Update Entry"}
                         </button>
                         <button
                             className="flex flex-row items-center justify-center rounded-lg bg-violet-600 p-3 text-white transition-all hover:bg-gray-900 "
@@ -180,7 +245,6 @@ export const StoredDomainsContent = ({ data, add, remove, update }: Props) => {
                             Cancel
                         </button>
                     </span>
-                </form>
             </Modal>
         </>
     );

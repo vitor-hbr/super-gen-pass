@@ -1,7 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-import { TOAST_MESSAGES } from "../utils/textConstants";
+import { TOAST_MESSAGES } from "../utils/constants";
 
 export const useClipboard = () => {
   const [clipboardText, setClipboardText] = useState("");

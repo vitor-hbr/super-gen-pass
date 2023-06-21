@@ -4,6 +4,8 @@ export const TOAST_MESSAGES = {
   missingInput: "Please, fill the 'Master Password' and 'Address' fields",
 }
 
-export const DATABASE_TABLES = {
-  configs: 'config-entry', 
+export enum ActionType {
+  add = "add",
+  edit = "edit",
+  remove = "remove",
 }

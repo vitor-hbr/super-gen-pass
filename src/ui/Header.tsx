@@ -1,16 +1,19 @@
 "use client";
 
-import { useSession, signIn, signOut } from "next-auth/react";
+import {
+    User,
+    createClientComponentClient,
+} from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { FaHome, FaStore } from "react-icons/fa";
 
-export const Header = () => {
-    const { data } = useSession();
-    const pathname = usePathname();
+export const Header = ({ user }: { user: User | null }) => {
+    const supabase = createClientComponentClient();
 
-    const userData = data?.user;
+    const pathname = usePathname();
+    const router = useRouter();
 
     const links = [
         {
@@ -26,11 +29,22 @@ export const Header = () => {
         },
     ];
 
+    const handleSignIn = async () => {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: "google",
+        });
+    };
+
+    const handleSignOut = async () => {
+        const { error } = await supabase.auth.signOut();
+        router.refresh();
+    };
+
     return (
         <header className="sticky top-0 grid w-full grid-cols-[1fr_auto_1fr] items-center bg-gray-900/60 px-8 py-4 text-p-mobile text-white backdrop-blur">
             <ul className="flex gap-6">
                 {links.map((link) => {
-                    if (link.requiresAuth && !userData) return null;
+                    if (link.requiresAuth && !user) return null;
 
                     const Icon = link.icon;
                     const isActive = pathname === link.href;
@@ -54,20 +68,20 @@ export const Header = () => {
             <strong className="animate-gradient-text bg-gradient-to-r from-violet-600 via-slate-300  to-purple-400 bg-clip-text font-display text-h5-desktop uppercase text-transparent duration-1000">
                 SuperGenPass
             </strong>
-            {userData && (
+            {user && (
                 <Image
-                    src={userData.image}
+                    src={user.user_metadata.avatar_url}
                     alt="Profile Picture"
                     width={56}
                     height={56}
                     className="justify-self-end rounded-full"
-                    onClick={() => signOut()}
+                    onClick={handleSignOut}
                 />
             )}
-            {!userData && (
+            {!user && (
                 <button
                     className="flex flex-row justify-self-end rounded-lg bg-violet-600 p-3 text-white transition-all hover:bg-slate-900"
-                    onClick={() => signIn()}
+                    onClick={handleSignIn}
                 >
                     Sign In
                 </button>
