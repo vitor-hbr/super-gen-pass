@@ -1,85 +1,84 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { generate } from "supergenpass-lib";
 import { TOAST_MESSAGES } from "../utils/constants";
 import { replaceAt } from "../utils/replaceAt";
 
 export type usePasswordGeneratorProps = {
-  initialPairs?: Pair[];
+    initialPairs?: Pair[];
 };
 
 export type Pair = {
-  url: string;
-  password: string;
-  options: {
+    id: string;
+    url: string;
+    password: string;
     onlyDomain: boolean;
-    generatedSize: number;
+    length: number;
     forceSpecialCharacter: boolean;
-  };
 };
 
 export const usePasswordGenerator = ({
-  initialPairs,
+    initialPairs,
 }: usePasswordGeneratorProps) => {
-  const [masterPassword, setMasterPassword] = useState("");
-  const [pairs, setPairs] = useState<Pair[]>(initialPairs || []);
+    const [masterPassword, setMasterPassword] = useState("");
+    const [pairs, setPairs] = useState<Pair[]>(initialPairs || []);
 
-  const maskPassword = (password: string) => {
-    return password.replace(/./g, "*");
-  };
+    const maskPassword = (password: string) => {
+        return password.replace(/./g, "*");
+    };
 
-  const generatePasswords = async () => {
-    if (masterPassword && pairs.length) {
-      const newPairs = [];
-      for (const pair of pairs) {
-        const password = await new Promise<string>((resolve) => {
-          generate(
-            masterPassword,
-            pair.url,
-            {
-              length: pair.options.generatedSize,
-              onlyDomain: pair.options.onlyDomain,
+    const generatePasswords = async () => {
+        if (!masterPassword || !pairs.length)
+            onMissingInputToast(TOAST_MESSAGES.missingInput);
+
+        const newPairs = [];
+        for (const pair of pairs) {
+            const password = await new Promise<string>((resolve) => {
+                generate(
+                    masterPassword,
+                    pair.url,
+                    {
+                        length: pair.length,
+                        onlyDomain: pair.onlyDomain,
+                    },
+                    (password) => {
+                        if (!pair.forceSpecialCharacter) resolve(password);
+
+                        resolve(replaceAt(password, password.length - 1, "@"));
+                    }
+                );
+            });
+
+            newPairs.push({ ...pair, password: password });
+        }
+        setPairs(newPairs);
+        onCreatedPasswordToast();
+
+        (document.activeElement as HTMLElement).blur();
+    };
+
+    const onCreatedPasswordToast = () =>
+        toast.success(TOAST_MESSAGES.success, {
+            iconTheme: {
+                primary: "#7c3aed",
+                secondary: "#fff",
             },
-            (password) => {
-              if (!pair.options.forceSpecialCharacter) resolve(password);
-
-              resolve(replaceAt(password, password.length - 1, "@"));
-            }
-          );
         });
 
-        newPairs.push({ ...pair, password: password });
-      }
-      setPairs(newPairs);
-      onCreatedPasswordToast();
-    } else {
-      onMissingInputToast(TOAST_MESSAGES.missingInput);
-    }
-    (document.activeElement as HTMLElement).blur();
-  };
+    const onMissingInputToast = (message: string) =>
+        toast.error(message, {
+            iconTheme: {
+                primary: "#7c3aed",
+                secondary: "#fff",
+            },
+        });
 
-  const onCreatedPasswordToast = () =>
-    toast.success(TOAST_MESSAGES.success, {
-      iconTheme: {
-        primary: "#7c3aed",
-        secondary: "#fff",
-      },
-    });
-
-  const onMissingInputToast = (message: string) =>
-    toast.error(message, {
-      iconTheme: {
-        primary: "#7c3aed",
-        secondary: "#fff",
-      },
-    });
-
-  return {
-    masterPassword,
-    setMasterPassword,
-    pairs,
-    setPairs,
-    maskPassword,
-    generatePasswords,
-  };
+    return {
+        masterPassword,
+        setMasterPassword,
+        pairs,
+        setPairs,
+        maskPassword,
+        generatePasswords,
+    };
 };

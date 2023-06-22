@@ -20,12 +20,7 @@ const StoredDomainsPage = async () => {
         redirect("/");
     }
 
-    return (
-        <div className="mx-auto flex flex-col items-center p-8 text-white">
-            <h3 className="pb-5">Stored Domains</h3>
-            <StoredDomainsContent entries={data} />
-        </div>
-    );
+    return <StoredDomainsContent entries={data} />;
 };
 
 export default StoredDomainsPage;

@@ -20,13 +20,13 @@ export const SinglePasswordGenerator = () => {
     } = usePasswordGenerator({
         initialPairs: [
             {
+                id: "1",
                 url: "",
                 password: "",
-                options: {
-                    onlyDomain: false,
-                    generatedSize: 14,
-                    forceSpecialCharacter: true,
-                },
+
+                onlyDomain: false,
+                length: 14,
+                forceSpecialCharacter: true,
             },
         ],
     });
@@ -135,14 +135,12 @@ export const SinglePasswordGenerator = () => {
                                 setPairs([
                                     {
                                         ...currentPair,
-                                        options: {
-                                            ...currentPair.options,
-                                            onlyDomain: checked,
-                                        },
+
+                                        onlyDomain: checked,
                                     },
                                 ])
                             }
-                            checked={currentPair.options.onlyDomain}
+                            checked={currentPair.onlyDomain}
                             uuid="domainToggle"
                         />
                     </span>
@@ -158,14 +156,12 @@ export const SinglePasswordGenerator = () => {
                                 setPairs([
                                     {
                                         ...currentPair,
-                                        options: {
-                                            ...currentPair.options,
-                                            forceSpecialCharacter: checked,
-                                        },
+
+                                        forceSpecialCharacter: checked,
                                     },
                                 ])
                             }
-                            checked={currentPair.options.forceSpecialCharacter}
+                            checked={currentPair.forceSpecialCharacter}
                             uuid="specialCharacterToggle"
                         />
                     </span>
@@ -179,22 +175,18 @@ export const SinglePasswordGenerator = () => {
                                     setPairs([
                                         {
                                             ...currentPair,
-                                            options: {
-                                                ...currentPair.options,
-                                                generatedSize: parseInt(
-                                                    e.target.value
-                                                ),
-                                            },
+
+                                            length: parseInt(e.target.value),
                                         },
                                     ])
                                 }
                                 min={4}
                                 max={24}
                                 step={1}
-                                value={currentPair.options.generatedSize}
+                                value={currentPair.length}
                                 className="h-2 w-[115px] cursor-pointer appearance-none rounded bg-white transition-all md:w-[180px]"
                             />
-                            <span>{currentPair.options.generatedSize}</span>
+                            <span>{currentPair.length}</span>
                         </div>
                     </span>
                 </section>
