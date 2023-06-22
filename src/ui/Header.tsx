@@ -40,8 +40,10 @@ export const Header = ({ user }: { user: User | null }) => {
         router.refresh();
     };
 
+    const openMenu = () => {};
+
     return (
-        <header className="sticky top-0 grid w-full grid-cols-[1fr_auto_1fr] items-center bg-gray-900/60 px-8 py-4 text-p-mobile text-white backdrop-blur">
+        <header className="sticky top-0 grid w-full grid-cols-[1fr_auto_1fr] items-center bg-gray-900/30 px-5 py-4 text-p-mobile text-white backdrop-blur lg:px-8">
             <ul className="flex gap-6">
                 {links.map((link) => {
                     if (link.requiresAuth && !user) return null;
@@ -55,17 +57,26 @@ export const Header = ({ user }: { user: User | null }) => {
                             }`}
                             key={link.href}
                         >
-                            <Icon
-                                className={`${
-                                    isActive ? "text-violet-600" : "text-white"
-                                }`}
-                            />
-                            <Link href={link.href}>{link.name}</Link>
+                            <Link
+                                href={link.href}
+                                className="flex items-center gap-2"
+                            >
+                                <Icon
+                                    className={`${
+                                        isActive
+                                            ? "text-violet-600"
+                                            : "text-white"
+                                    }`}
+                                />
+                                <span className="hidden lg:block">
+                                    {link.name}
+                                </span>
+                            </Link>
                         </li>
                     );
                 })}
             </ul>
-            <strong className="animate-gradient-text bg-gradient-to-r from-violet-600 via-slate-300  to-purple-400 bg-clip-text font-display text-h5-desktop uppercase text-transparent duration-1000">
+            <strong className="animate-gradient-text bg-gradient-to-r from-violet-600 via-slate-300  to-purple-400 bg-clip-text font-display text-h5-mobile uppercase text-transparent duration-1000 lg:text-h5-desktop">
                 SuperGenPass
             </strong>
             {user && (
@@ -74,7 +85,7 @@ export const Header = ({ user }: { user: User | null }) => {
                     alt="Profile Picture"
                     width={56}
                     height={56}
-                    className="justify-self-end rounded-full"
+                    className="w-9 justify-self-end rounded-full lg:w-10"
                     onClick={handleSignOut}
                 />
             )}
