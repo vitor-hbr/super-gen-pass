@@ -1,4 +1,4 @@
-export type DialogFormData = {
+export type PasswordConfigEntry = {
     id: string;
     url: string;
     length: number;

@@ -4,11 +4,11 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 
-import { DialogFormData } from "../../utils/models";
+import { PasswordConfigEntry } from "../../utils/models";
 import { DATABASE_TABLES } from "../../utils/database.types";
 import { ActionType } from "../../utils/constants";
 
-export async function addNewConfigEntry(data: DialogFormData) {
+export async function addNewConfigEntry(data: PasswordConfigEntry) {
     "use server";
     const supabase = createServerComponentClient({ cookies });
     const {
@@ -46,7 +46,7 @@ export async function removeConfigEntry(url: string) {
     revalidatePath("/stored-domains");
 }
 
-export async function updateConfigEntry(data: DialogFormData) {
+export async function updateConfigEntry(data: PasswordConfigEntry) {
     "use server";
     const supabase = createServerComponentClient({ cookies });
     const {
@@ -69,7 +69,7 @@ export async function updateConfigEntry(data: DialogFormData) {
 
 export async function onDialogSubmit(
     dialogMode: ActionType.add | ActionType.edit,
-    dialogState: DialogFormData
+    dialogState: PasswordConfigEntry
 ) {
     "use server";
     if (dialogMode === ActionType.add) {

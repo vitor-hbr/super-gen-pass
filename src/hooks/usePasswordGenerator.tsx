@@ -3,35 +3,30 @@ import toast from "react-hot-toast";
 import { generate } from "supergenpass-lib";
 import { TOAST_MESSAGES } from "../utils/constants";
 import { replaceAt } from "../utils/replaceAt";
+import { PasswordConfigEntry } from "../utils/models";
 
-export type usePasswordGeneratorProps = {
-    initialPairs?: Pair[];
-};
+export interface Pair extends PasswordConfigEntry {
+    password?: string;
+}
 
-export type Pair = {
-    id: string;
-    url: string;
-    password: string;
-    onlyDomain: boolean;
-    length: number;
-    forceSpecialCharacter: boolean;
-};
-
-export const usePasswordGenerator = ({
-    initialPairs,
-}: usePasswordGeneratorProps) => {
+export const usePasswordGenerator = () => {
     const [masterPassword, setMasterPassword] = useState("");
-    const [pairs, setPairs] = useState<Pair[]>(initialPairs || []);
 
     const maskPassword = (password: string) => {
         return password.replace(/./g, "*");
     };
 
-    const generatePasswords = async () => {
-        if (!masterPassword || !pairs.length)
-            onMissingInputToast(TOAST_MESSAGES.missingInput);
+    const generatePasswords = async (
+        pairs: Pair[],
+        runOnBackground?: boolean
+    ) => {
+        if (!masterPassword || !pairs.length) {
+            if (!runOnBackground)
+                onMissingInputToast(TOAST_MESSAGES.missingInput);
+            return pairs || [];
+        }
 
-        const newPairs = [];
+        const resultingPairs: Pair[] = [];
         for (const pair of pairs) {
             const password = await new Promise<string>((resolve) => {
                 generate(
@@ -49,12 +44,11 @@ export const usePasswordGenerator = ({
                 );
             });
 
-            newPairs.push({ ...pair, password: password });
+            resultingPairs.push({ ...pair, password: password });
         }
-        setPairs(newPairs);
         onCreatedPasswordToast();
 
-        (document.activeElement as HTMLElement).blur();
+        return resultingPairs;
     };
 
     const onCreatedPasswordToast = () =>
@@ -76,8 +70,6 @@ export const usePasswordGenerator = ({
     return {
         masterPassword,
         setMasterPassword,
-        pairs,
-        setPairs,
         maskPassword,
         generatePasswords,
     };

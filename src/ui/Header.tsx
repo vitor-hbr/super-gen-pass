@@ -40,8 +40,6 @@ export const Header = ({ user }: { user: User | null }) => {
         router.refresh();
     };
 
-    const openMenu = () => {};
-
     return (
         <header className="sticky top-0 grid w-full grid-cols-[1fr_auto_1fr] items-center bg-gray-900/30 px-5 py-4 text-p-mobile text-white backdrop-blur lg:px-8">
             <ul className="flex gap-6">
@@ -89,6 +87,7 @@ export const Header = ({ user }: { user: User | null }) => {
                     onClick={handleSignOut}
                 />
             )}
+            <dialog />
             {!user && (
                 <button
                     className="flex flex-row justify-self-end rounded-lg bg-violet-600 p-3 text-white transition-all hover:bg-slate-900"

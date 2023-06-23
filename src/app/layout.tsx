@@ -56,12 +56,10 @@ export default async function RootLayout({
 }
 
 const getGithubData = async () => {
-    const response = await fetch(
-        "https://api.github.com/users/vitor-hbr"
-    )
+    const response = await fetch("https://api.github.com/users/vitor-hbr");
     const { avatar_url, name, bio, html_url } = await response.json();
-       
-        return {
+
+    return {
         avatar_url,
         name,
         bio,

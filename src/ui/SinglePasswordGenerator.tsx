@@ -8,28 +8,25 @@ import autoAnimate from "@formkit/auto-animate";
 import { Checkbox } from "./Checkbox";
 import { PasswordInput } from "./PasswordInput";
 import { usePasswordGenerator, useClipboard } from "../hooks";
+import { Pair } from "../hooks/usePasswordGenerator";
 
 export const SinglePasswordGenerator = () => {
+    const [pairs, setPairs] = useState<Pair[]>([
+        {
+            id: "1",
+            url: "",
+            password: "",
+            onlyDomain: false,
+            length: 14,
+            forceSpecialCharacter: true,
+        },
+    ]);
     const {
         masterPassword,
         setMasterPassword,
-        pairs,
-        setPairs,
         generatePasswords,
         maskPassword,
-    } = usePasswordGenerator({
-        initialPairs: [
-            {
-                id: "1",
-                url: "",
-                password: "",
-
-                onlyDomain: false,
-                length: 14,
-                forceSpecialCharacter: true,
-            },
-        ],
-    });
+    } = usePasswordGenerator();
     const { clipboardText, copyToClipboard } = useClipboard();
     const [isGeneratedPasswordVisible, setIsGeneratedPasswordVisible] =
         useState(false);
@@ -75,7 +72,11 @@ export const SinglePasswordGenerator = () => {
             <span className="flex drop-shadow-sm">
                 {!currentPair.password ? (
                     <button
-                        onClick={() => generatePasswords()}
+                        onClick={() => {
+                            generatePasswords()(
+                                document.activeElement as HTMLElement
+                            ).blur();
+                        }}
                         className="flex flex-row items-center justify-center rounded-lg bg-white p-3 text-violet-600 transition-all hover:bg-slate-900 hover:text-white"
                     >
                         <label className="cursor-pointer pr-3">
