@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import autoAnimate from "@formkit/auto-animate";
+import toast from "react-hot-toast";
 
 import {
     FaClipboard,
@@ -9,7 +11,6 @@ import {
     FaTrash,
 } from "react-icons/fa";
 import { Pair } from "../hooks/usePasswordGenerator";
-import autoAnimate from "@formkit/auto-animate";
 
 export const StoredCard = ({
     pair,
@@ -32,7 +33,14 @@ export const StoredCard = ({
     };
 
     const copyPassword = () => {
-        copyToClipboard(pair.password);
+        if (pair.password) copyToClipboard(pair.password);
+        else
+            toast.error("No password generated!", {
+                iconTheme: {
+                    primary: "#7c3aed",
+                    secondary: "#fff",
+                },
+            });
     };
 
     useEffect(() => {

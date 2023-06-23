@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { FaKey, FaClipboard, FaClipboardCheck, FaCog } from "react-icons/fa";
-import { Toaster } from "react-hot-toast";
 import autoAnimate from "@formkit/auto-animate";
 
 import { Checkbox } from "./Checkbox";
@@ -44,7 +43,6 @@ export const SinglePasswordGenerator = () => {
             className="flex w-full max-w-sm select-none flex-col items-center justify-center rounded-lg bg-gradient-to-b from-violet-500 via-violet-700 to-violet-900 p-6 text-white"
             ref={containerRef}
         >
-            <Toaster />
             <PasswordInput
                 onChange={(value) => setMasterPassword(value)}
                 value={masterPassword}
@@ -73,9 +71,9 @@ export const SinglePasswordGenerator = () => {
                 {!currentPair.password ? (
                     <button
                         onClick={() => {
-                            generatePasswords()(
-                                document.activeElement as HTMLElement
-                            ).blur();
+                            generatePasswords(pairs);
+
+                            (document.activeElement as HTMLElement).blur();
                         }}
                         className="flex flex-row items-center justify-center rounded-lg bg-white p-3 text-violet-600 transition-all hover:bg-slate-900 hover:text-white"
                     >

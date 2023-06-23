@@ -18,6 +18,7 @@ import {
 } from "../hooks";
 import { StoredCard } from "./StoredCard";
 import { EntryDialog, initialDialogState } from "./EntryDialog";
+import toast from "react-hot-toast";
 
 type Props = {
     entries: PasswordConfigEntry[];
@@ -59,7 +60,7 @@ export const StoredDomainsContent = ({ entries }: Props) => {
         }
 
         updatePairsWithPasswords();
-    }, [entries]);
+    }, [entries, generatePasswords]);
 
     function openDialog() {
         dialogRef.current?.showModal();
@@ -101,7 +102,7 @@ export const StoredDomainsContent = ({ entries }: Props) => {
                         removeEntry={async () => {
                             await removeConfigEntry(pair.url);
                         }}
-                        isCopied={clipboardText === ""}
+                        isCopied={clipboardText === pair.password}
                         copyToClipboard={copyToClipboard}
                     />
                 ))}

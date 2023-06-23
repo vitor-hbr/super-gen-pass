@@ -17,7 +17,7 @@ export const useDebounce = (
         };
 
         return debounce(func, waitFor);
-    }, []);
+    }, [waitFor]);
 
     return debouncedCallback;
 };

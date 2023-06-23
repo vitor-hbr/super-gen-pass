@@ -3,6 +3,8 @@ import { Modal } from "./Modal";
 import { PasswordConfigEntry } from "../utils/models";
 import { ActionType } from "../utils/constants";
 import { Checkbox } from "./Checkbox";
+import { toast } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 export const initialDialogState: PasswordConfigEntry = {
     id: "",
@@ -24,6 +26,8 @@ export const EntryDialog = forwardRef<HTMLDialogElement, Props>(
     ({ dialogMode, dialogState, setDialogState, onConfirm, onCancel }, ref) => {
         return (
             <Modal ref={ref} className={"rounded-xl bg-gray-100 p-5"}>
+                <Toaster />
+
                 <span className="mb-4 flex w-full max-w-xs rounded-lg bg-white p-3 outline outline-0 outline-offset-4 outline-gray-900 drop-shadow-sm focus-within:outline-1">
                     <input
                         type="text"
@@ -99,7 +103,16 @@ export const EntryDialog = forwardRef<HTMLDialogElement, Props>(
                     <button
                         className="flex flex-row items-center justify-center rounded-lg bg-violet-600 p-3 text-white transition-all hover:bg-gray-900"
                         type="button"
-                        onClick={onConfirm}
+                        onClick={() => {
+                            if (dialogState.url.length > 0) onConfirm();
+                            else
+                                toast.error("Please enter an url", {
+                                    iconTheme: {
+                                        primary: "#7c3aed",
+                                        secondary: "#fff",
+                                    },
+                                });
+                        }}
                     >
                         {dialogMode === ActionType.add
                             ? "Create New Entry"
@@ -118,3 +131,7 @@ export const EntryDialog = forwardRef<HTMLDialogElement, Props>(
         );
     }
 );
+
+EntryDialog.displayName = "EntryDialog";
+
+export default EntryDialog;
