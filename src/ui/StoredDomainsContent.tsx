@@ -18,7 +18,6 @@ import {
 } from "../hooks";
 import { StoredCard } from "./StoredCard";
 import { EntryDialog, initialDialogState } from "./EntryDialog";
-import toast from "react-hot-toast";
 import { FaSearch } from "react-icons/fa";
 
 type Props = {
@@ -115,7 +114,7 @@ export const StoredDomainsContent = ({ entries }: Props) => {
                             openDialog();
                         }}
                         removeEntry={async () => {
-                            await removeConfigEntry(pair.url);
+                            await removeConfigEntry(pair.id);
                         }}
                         isCopied={clipboardText === pair.password}
                         copyToClipboard={copyToClipboard}

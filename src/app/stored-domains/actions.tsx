@@ -32,7 +32,7 @@ export async function addNewConfigEntry(data: PasswordConfigEntry) {
     revalidatePath("/stored-domains");
 }
 
-export async function removeConfigEntry(url: string) {
+export async function removeConfigEntry(id: string) {
     "use server";
     const supabase = createServerComponentClient({ cookies });
     const {
@@ -42,7 +42,7 @@ export async function removeConfigEntry(url: string) {
     const { data, error } = await supabase
         .from(DATABASE_TABLES.configs)
         .delete()
-        .match({ url, email: user.email });
+        .match({ id, email: user.email });
     revalidatePath("/stored-domains");
 }
 
