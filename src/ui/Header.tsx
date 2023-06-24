@@ -33,6 +33,7 @@ export const Header = ({ user }: { user: User | null }) => {
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider: "google",
         });
+        router.refresh();
     };
 
     const handleSignOut = async () => {
