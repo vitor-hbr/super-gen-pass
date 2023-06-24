@@ -44,7 +44,7 @@ export const usePasswordGenerator = () => {
                 );
             });
 
-            resultingPairs.push({ ...pair, password: password });
+            resultingPairs.push({ ...pair, password });
         }
         onCreatedPasswordToast();
 

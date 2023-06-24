@@ -19,6 +19,7 @@ import {
 import { StoredCard } from "./StoredCard";
 import { EntryDialog, initialDialogState } from "./EntryDialog";
 import toast from "react-hot-toast";
+import { FaSearch } from "react-icons/fa";
 
 type Props = {
     entries: PasswordConfigEntry[];
@@ -35,6 +36,7 @@ export const StoredDomainsContent = ({ entries }: Props) => {
 
     const { generatePasswords, masterPassword, setMasterPassword } =
         usePasswordGenerator();
+    const [search, setSearch] = useState<string>("");
 
     let [pairs, setPairs] = useState<Pair[]>(entries);
 
@@ -60,7 +62,7 @@ export const StoredDomainsContent = ({ entries }: Props) => {
         }
 
         updatePairsWithPasswords();
-    }, [entries, generatePasswords]);
+    }, [entries]);
 
     function openDialog() {
         dialogRef.current?.showModal();
@@ -69,6 +71,10 @@ export const StoredDomainsContent = ({ entries }: Props) => {
     function closeDialog() {
         dialogRef.current?.close();
     }
+
+    const filteredPairs = pairs.filter((pair) =>
+        pair.url.toLowerCase().includes(search.toLowerCase())
+    );
 
     return (
         <div className="mx-auto flex w-full flex-col items-center gap-11 p-4 text-white lg:w-auto lg:p-8">
@@ -88,9 +94,18 @@ export const StoredDomainsContent = ({ entries }: Props) => {
                 >
                     Add New Domain
                 </button>
+                <span className="mt-4 flex w-full items-center rounded-lg bg-white p-3 text-slate-900 outline outline-0 outline-offset-4 outline-gray-900 drop-shadow-sm focus-within:outline-1">
+                    <input
+                        className="w-full  outline-none"
+                        placeholder="Search"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+                    <FaSearch className="text-violet-600" />
+                </span>
             </section>
             <ul className="flex w-full flex-col gap-4" ref={containerRef}>
-                {pairs.map((pair) => (
+                {filteredPairs.map((pair) => (
                     <StoredCard
                         key={pair.id}
                         pair={pair}
