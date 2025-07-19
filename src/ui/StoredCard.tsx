@@ -48,11 +48,10 @@ export const StoredCard = ({
     }, [containerRef]);
 
     return (
-        <li className="flex w-full items-center gap-2 rounded-md bg-gray-50 p-4 outline outline-2 outline-offset-1 outline-violet-600">
+        <li className="flex w-full items-center gap-2 rounded-md bg-gray-50 p-4 outline-2 outline-offset-1 outline-violet-600">
             <button
                 onClick={togglePasswordVisibility}
-                className="flex w-full items-center gap-2
-                text-gray-500 hover:text-gray-700"
+                className="flex w-full items-center gap-2 text-gray-500 hover:text-gray-700"
                 ref={containerRef}
             >
                 {!isPasswordVisible && <FaEye className="h-5 w-5" />}
