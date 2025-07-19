@@ -1,12 +1,9 @@
-@use "tailwindcss";
+@import "tailwindcss";
 
 @source "src/app/**/*.{js,ts,jsx,tsx}";
 @source "src/ui/**/*.{js,ts,jsx,tsx}";
 
 @theme {
-  --font-family-sans: var(--font-nunito), sans-serif;
-  --font-family-display: var(--font-staatliches), sans-serif;
-
   /* Custom spacing scale */
   --spacing-0: 0px;
   --spacing-1: 4px;
@@ -30,6 +27,10 @@
   --spacing-19: 128px;
   --spacing-20: 136px;
   --spacing-21: 144px;
+
+  /* Font families - add these */
+  --font-family-sans: var(--font-nunito, sans-serif);
+  --font-family-display: var(--font-staatliches, sans-serif);
 
   /* Custom font sizes - correct syntax for Tailwind CSS v4 */
   --font-size-h1-desktop: 6rem;
@@ -59,6 +60,9 @@
   --animate-gradient-text: gradient-text 5s ease infinite;
   --animate-overlay-fade-in: overlay-fade-in 1s ease-in;
   --animate-modal-fade-in: modal-fade-in 1s ease-in-out;
+
+  /* Custom breakpoints */
+  --breakpoint-lg: 1024px;
 }
 
 /* Define custom utilities for font sizes */
@@ -100,6 +104,14 @@
 @utility text-p-desktop {
   font-size: theme(--font-size-p-desktop);
   line-height: theme(--font-size-p-desktop--line-height);
+}
+
+@utility font-display {
+  font-family: theme(--font-family-display);
+}
+
+@utility font-sans {
+  font-family: theme(--font-family-sans);
 }
 
 /* Keyframes for custom animations */
@@ -209,7 +221,7 @@ input[type='range'] {
       @apply text-p-mobile;
     }
   
-    @screen lg {
+    @media (min-width: 1024px) {
       h1 {
         @apply text-h1-desktop;
       }

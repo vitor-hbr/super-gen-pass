@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { Nunito, Staatliches } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 
-import "../styles/globals.scss";
+import "../styles/globals.css";
 import { Footer } from "../ui";
 import { Header } from "../ui/Header";
 import { createServerClient } from "../utils/supabase/server";
