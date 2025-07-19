@@ -1,7 +1,130 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@use "tailwindcss";
 
+@source "src/app/**/*.{js,ts,jsx,tsx}";
+@source "src/ui/**/*.{js,ts,jsx,tsx}";
+
+@theme {
+  --font-family-sans: var(--font-nunito), sans-serif;
+  --font-family-display: var(--font-staatliches), sans-serif;
+
+  /* Custom spacing scale */
+  --spacing-0: 0px;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-7: 32px;
+  --spacing-8: 40px;
+  --spacing-9: 48px;
+  --spacing-10: 56px;
+  --spacing-11: 64px;
+  --spacing-12: 72px;
+  --spacing-13: 80px;
+  --spacing-14: 88px;
+  --spacing-15: 96px;
+  --spacing-16: 104px;
+  --spacing-17: 112px;
+  --spacing-18: 120px;
+  --spacing-19: 128px;
+  --spacing-20: 136px;
+  --spacing-21: 144px;
+
+  /* Custom font sizes - correct syntax for Tailwind CSS v4 */
+  --font-size-h1-desktop: 6rem;
+  --font-size-h1-desktop--line-height: 7.5rem;
+  --font-size-h1-mobile: 3.5rem;
+  --font-size-h1-mobile--line-height: 4rem;
+  --font-size-h3-desktop: 3.5rem;
+  --font-size-h3-desktop--line-height: 4rem;
+  --font-size-h3-mobile: 2rem;
+  --font-size-h3-mobile--line-height: 2.5rem;
+  --font-size-h5-desktop: 2rem;
+  --font-size-h5-desktop--line-height: 2.5rem;
+  --font-size-h5-mobile: 1.25rem;
+  --font-size-h5-mobile--line-height: 2rem;
+  --font-size-p-desktop: 1.25rem;
+  --font-size-p-desktop--line-height: 1.75rem;
+  --font-size-p-mobile: 1rem;
+  --font-size-p-mobile--line-height: 1.4rem;
+
+  /* Min-height values */
+  --min-height-screen: 100dvh;
+
+  /* Height values */  
+  --height-screen: 100dvh;
+
+  /* Custom animations */
+  --animate-gradient-text: gradient-text 5s ease infinite;
+  --animate-overlay-fade-in: overlay-fade-in 1s ease-in;
+  --animate-modal-fade-in: modal-fade-in 1s ease-in-out;
+}
+
+/* Define custom utilities for font sizes */
+@utility text-h1-mobile {
+  font-size: theme(--font-size-h1-mobile);
+  line-height: theme(--font-size-h1-mobile--line-height);
+}
+
+@utility text-h1-desktop {
+  font-size: theme(--font-size-h1-desktop);
+  line-height: theme(--font-size-h1-desktop--line-height);
+}
+
+@utility text-h3-mobile {
+  font-size: theme(--font-size-h3-mobile);
+  line-height: theme(--font-size-h3-mobile--line-height);
+}
+
+@utility text-h3-desktop {
+  font-size: theme(--font-size-h3-desktop);
+  line-height: theme(--font-size-h3-desktop--line-height);
+}
+
+@utility text-h5-mobile {
+  font-size: theme(--font-size-h5-mobile);
+  line-height: theme(--font-size-h5-mobile--line-height);
+}
+
+@utility text-h5-desktop {
+  font-size: theme(--font-size-h5-desktop);
+  line-height: theme(--font-size-h5-desktop--line-height);
+}
+
+@utility text-p-mobile {
+  font-size: theme(--font-size-p-mobile);
+  line-height: theme(--font-size-p-mobile--line-height);
+}
+
+@utility text-p-desktop {
+  font-size: theme(--font-size-p-desktop);
+  line-height: theme(--font-size-p-desktop--line-height);
+}
+
+/* Keyframes for custom animations */
+@keyframes gradient-text {
+  0%, 100% {
+    background-size: 200% 200%;
+    background-position: left center;
+  }
+  50% {
+    background-size: 200% 200%;
+    background-position: right center;
+  }
+}
+
+@keyframes overlay-fade-in {
+  0% { background: rgba(0, 0, 0, 0.0); }
+  100% { background: rgba(0, 0, 0, 0.2); }
+}
+
+@keyframes modal-fade-in {
+  0% { opacity: 0; transform: translateY(100px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Your existing styles */
 *{
     outline-color: #111827;
 }
@@ -15,7 +138,7 @@ a {
 }
 
 html {
-    --s: 600px; /* control the size */
+    --s: 600px;
     --c1: #111827;
     --c2: #0b101a;
     

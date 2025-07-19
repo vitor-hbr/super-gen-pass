@@ -1,19 +1,21 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 
-import { PasswordConfigEntry } from "../../utils/models";
-import { DATABASE_TABLES } from "../../utils/database.types";
-import { ActionType } from "../../utils/constants";
+import { PasswordConfigEntry } from "../utils/models";
+import { DATABASE_TABLES } from "../utils/database.types";
+import { createServerClient } from "../utils/supabase/server";
 
 export async function addNewConfigEntry(data: PasswordConfigEntry) {
-    "use server";
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = await createServerClient();
     const {
         data: { user },
+        error: authError
     } = await supabase.auth.getUser();
+
+    if (authError || !user?.email) {
+        throw new Error('Unauthorized');
+    }
 
     const { url, length, forceSpecialCharacter, onlyDomain } = data;
 
@@ -29,12 +31,11 @@ export async function addNewConfigEntry(data: PasswordConfigEntry) {
             },
         ]);
 
-    revalidatePath("/stored-domains");
+    revalidatePath("/");
 }
 
 export async function removeConfigEntry(id: string) {
-    "use server";
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = await createServerClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();
@@ -43,12 +44,11 @@ export async function removeConfigEntry(id: string) {
         .from(DATABASE_TABLES.configs)
         .delete()
         .match({ id, email: user.email });
-    revalidatePath("/stored-domains");
+    revalidatePath("/");
 }
 
 export async function updateConfigEntry(data: PasswordConfigEntry) {
-    "use server";
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = await createServerClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();
@@ -64,17 +64,5 @@ export async function updateConfigEntry(data: PasswordConfigEntry) {
             onlyDomain,
         })
         .match({ id, email: user.email });
-    revalidatePath("/stored-domains");
-}
-
-export async function onDialogSubmit(
-    dialogMode: ActionType.add | ActionType.edit,
-    dialogState: PasswordConfigEntry
-) {
-    "use server";
-    if (dialogMode === ActionType.add) {
-        await addNewConfigEntry(dialogState);
-    } else {
-        await updateConfigEntry(dialogState);
-    }
+    revalidatePath("/");
 }

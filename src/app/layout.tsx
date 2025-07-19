@@ -1,12 +1,12 @@
 import { Metadata } from "next";
 import { Nunito, Staatliches } from "next/font/google";
-import { cookies } from "next/headers";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Toaster } from "react-hot-toast";
 
 import "../styles/globals.scss";
 import { Footer } from "../ui";
 import { Header } from "../ui/Header";
+import { createServerClient } from "../utils/supabase/server";
+import { AuthProvider } from "../contexts/AuthContext";
 
 const nunitoFont = Nunito({
     subsets: ["latin"],
@@ -36,7 +36,7 @@ export default async function RootLayout({
     children: React.ReactNode;
 }) {
     const { avatar_url } = await getGithubData();
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = await createServerClient();
 
     const {
         data: { user },
@@ -48,11 +48,12 @@ export default async function RootLayout({
             className={`${nunitoFont.variable} ${staatlichesFont.variable} min-h-screen`}
         >
             <body className="flex min-h-screen flex-col">
-                <Toaster />
-
-                <Header user={user} />
-                <main className="flex flex-grow">{children}</main>
-                <Footer avatar_url={avatar_url} />
+                <AuthProvider initialUser={user}>
+                    <Toaster />
+                    <Header />
+                    <main className="flex flex-grow">{children}</main>
+                    <Footer avatar_url={avatar_url} />
+                </AuthProvider>
             </body>
         </html>
     );

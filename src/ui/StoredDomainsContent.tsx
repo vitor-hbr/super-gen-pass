@@ -5,10 +5,7 @@ import autoAnimate from "@formkit/auto-animate";
 
 import { PasswordInput } from "./PasswordInput";
 import { PasswordConfigEntry } from "../utils/models";
-import {
-    onDialogSubmit,
-    removeConfigEntry,
-} from "../app/stored-domains/actions";
+import { addNewConfigEntry, removeConfigEntry } from "../app/actions";
 import { ActionType } from "../utils/constants";
 import {
     useClipboard,
@@ -19,10 +16,67 @@ import {
 import { StoredCard } from "./StoredCard";
 import { EntryDialog, initialDialogState } from "./EntryDialog";
 import { FaSearch } from "react-icons/fa";
+import { mutate } from "swr";
+import { toast } from "react-hot-toast";
 
 type Props = {
     entries: PasswordConfigEntry[];
 };
+
+const confirmEntryEdit = async (entry: PasswordConfigEntry) => {
+    mutate('stored-domains', (data: PasswordConfigEntry[]) => {
+        return data.map((item) => {
+            if (item.id === entry.id) {
+                return entry;
+            }
+            return item;
+        });
+    });
+
+    try {
+        await addNewConfigEntry(entry);
+        mutate('stored-domains');
+    } catch (error) {
+        toast.error('Failed to edit entry');
+        mutate('stored-domains');
+    }
+}
+
+const confirmEntryAdd = async (entry: PasswordConfigEntry) => {
+    mutate('stored-domains', (data: PasswordConfigEntry[]) => {
+        return [...data, entry];
+    });
+
+    try {
+        await addNewConfigEntry(entry);
+        mutate('stored-domains');
+    } catch (error) {
+        toast.error('Failed to create entry');
+        mutate('stored-domains');
+    }
+}
+
+const handleRemoveEntry = async (entry: PasswordConfigEntry) => {
+    const isConfirmed = window.confirm(
+        `Are you sure you want to remove the entry for "${entry.url}"?`
+    );
+    
+    if (!isConfirmed) {
+        return;
+    }
+
+    mutate('stored-domains', (data: PasswordConfigEntry[]) => {
+        return data.filter((item) => item.id !== entry.id)
+    }, false);
+
+    try {
+        await removeConfigEntry(entry.id);
+        mutate('stored-domains');
+    } catch (error) {
+        toast.error('Failed to remove entry');
+        mutate('stored-domains');
+    }
+}
 
 export const StoredDomainsContent = ({ entries }: Props) => {
     const { clipboardText, copyToClipboard } = useClipboard();
@@ -114,7 +168,7 @@ export const StoredDomainsContent = ({ entries }: Props) => {
                             openDialog();
                         }}
                         removeEntry={async () => {
-                            await removeConfigEntry(pair.id);
+                            await handleRemoveEntry(pair);
                         }}
                         isCopied={clipboardText === pair.password}
                         copyToClipboard={copyToClipboard}
@@ -125,7 +179,11 @@ export const StoredDomainsContent = ({ entries }: Props) => {
                 ref={dialogRef}
                 onConfirm={async () => {
                     closeDialog();
-                    await onDialogSubmit(dialogMode, dialogState);
+                    if (dialogMode === ActionType.add) {
+                        await confirmEntryAdd(dialogState);
+                    } else {
+                        await confirmEntryEdit(dialogState);
+                    }
                     setDialogState(initialDialogState);
                 }}
                 onCancel={closeDialog}
