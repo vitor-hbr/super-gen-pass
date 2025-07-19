@@ -70,7 +70,6 @@ export const Header = () => {
                     onClick={handleSignOut}
                 />
             )}
-            <dialog />
             {!user && (
                 <button
                     className="flex flex-row justify-self-end rounded-lg bg-violet-600 p-3 text-white transition-all hover:bg-slate-900"

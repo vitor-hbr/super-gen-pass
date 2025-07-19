@@ -24,7 +24,7 @@ type Props = {
 export const EntryDialog = forwardRef<HTMLDialogElement, Props>(
     ({ dialogMode, dialogState, setDialogState, onConfirm, onCancel }, ref) => {
         return (
-            <Modal ref={ref} className={"rounded-xl bg-gray-100 p-5"}>
+            <Modal ref={ref} className={"rounded-xl bg-gray-100 p-5 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"}>
                 <span className="mb-4 flex w-full max-w-xs rounded-lg bg-white p-3 outline outline-offset-4 outline-gray-900 drop-shadow-sm focus-within:outline-1">
                     <input
                         type="text"
