@@ -5,7 +5,7 @@ export const useDebounce = (
     callback: (...args: any[]) => any,
     waitFor: number = 250
 ) => {
-    const ref = useRef<Function>();
+    const ref = useRef<Function>(() => {});
 
     useEffect(() => {
         ref.current = callback;
@@ -13,7 +13,7 @@ export const useDebounce = (
 
     const debouncedCallback = useMemo(() => {
         const func = () => {
-            ref.current?.();
+            ref.current();
         };
 
         return debounce(func, waitFor);

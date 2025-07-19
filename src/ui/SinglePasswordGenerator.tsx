@@ -32,7 +32,7 @@ export const SinglePasswordGenerator = () => {
     const [showSettings, setShowSettings] = useState(false);
     const containerRef = React.useRef(null);
 
-    const currentPair = pairs[0];
+    const currentPair = pairs[0]!;
 
     useEffect(() => {
         containerRef.current && autoAnimate(containerRef.current);
@@ -50,7 +50,7 @@ export const SinglePasswordGenerator = () => {
                 className="mb-4 max-w-xs"
             />
 
-            <span className="mb-4 flex w-full max-w-xs rounded-lg bg-white p-3 outline outline-0 outline-offset-4 outline-gray-900 drop-shadow-sm focus-within:outline-1">
+            <span className="mb-4 flex w-full max-w-xs rounded-lg bg-white p-3 outline outline-offset-4 outline-gray-900 drop-shadow-sm focus-within:outline-1">
                 <input
                     type="text"
                     placeholder="Enter the address of the site"
@@ -59,6 +59,7 @@ export const SinglePasswordGenerator = () => {
                         setPairs([
                             {
                                 ...currentPair,
+                                id: currentPair.id,
                                 url: e.target.value,
                                 password: "",
                             },
@@ -68,7 +69,7 @@ export const SinglePasswordGenerator = () => {
                 />
             </span>
             <span className="flex drop-shadow-sm">
-                {!currentPair.password ? (
+                {!currentPair?.password ? (
                     <button
                         onClick={() => {
                             generatePasswords(pairs);
@@ -96,7 +97,7 @@ export const SinglePasswordGenerator = () => {
                         </button>
                         <button
                             onClick={() =>
-                                copyToClipboard(currentPair.password)
+                                copyToClipboard(currentPair.password ?? "")
                             }
                             className="rounded-lg rounded-l-none bg-white p-3 text-violet-600 hover:bg-slate-900 hover:text-white"
                         >
@@ -134,7 +135,6 @@ export const SinglePasswordGenerator = () => {
                                 setPairs([
                                     {
                                         ...currentPair,
-
                                         onlyDomain: checked,
                                     },
                                 ])
@@ -155,7 +155,6 @@ export const SinglePasswordGenerator = () => {
                                 setPairs([
                                     {
                                         ...currentPair,
-
                                         forceSpecialCharacter: checked,
                                     },
                                 ])
@@ -174,7 +173,6 @@ export const SinglePasswordGenerator = () => {
                                     setPairs([
                                         {
                                             ...currentPair,
-
                                             length: parseInt(e.target.value),
                                         },
                                     ])

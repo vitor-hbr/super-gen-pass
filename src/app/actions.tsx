@@ -40,6 +40,10 @@ export async function removeConfigEntry(id: string) {
         data: { user },
     } = await supabase.auth.getUser();
 
+    if (!user?.email) {
+        throw new Error('Unauthorized');
+    }
+
     const { data, error } = await supabase
         .from(DATABASE_TABLES.configs)
         .delete()
@@ -52,6 +56,10 @@ export async function updateConfigEntry(data: PasswordConfigEntry) {
     const {
         data: { user },
     } = await supabase.auth.getUser();
+
+    if (!user?.email) {
+        throw new Error('Unauthorized');
+    }
 
     const { id, url, length, forceSpecialCharacter, onlyDomain } = data;
 

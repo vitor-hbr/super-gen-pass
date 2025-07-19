@@ -24,7 +24,8 @@ type Props = {
 };
 
 const confirmEntryEdit = async (entry: PasswordConfigEntry) => {
-    mutate('stored-domains', (data: PasswordConfigEntry[]) => {
+    mutate('stored-domains', (data: PasswordConfigEntry[] | undefined) => {
+        if (!data) return [entry];
         return data.map((item) => {
             if (item.id === entry.id) {
                 return entry;
@@ -43,8 +44,8 @@ const confirmEntryEdit = async (entry: PasswordConfigEntry) => {
 }
 
 const confirmEntryAdd = async (entry: PasswordConfigEntry) => {
-    mutate('stored-domains', (data: PasswordConfigEntry[]) => {
-        return [...data, entry];
+    mutate('stored-domains', (data: PasswordConfigEntry[] | undefined) => {
+        return [...(data || []), entry];
     });
 
     try {
@@ -65,8 +66,8 @@ const handleRemoveEntry = async (entry: PasswordConfigEntry) => {
         return;
     }
 
-    mutate('stored-domains', (data: PasswordConfigEntry[]) => {
-        return data.filter((item) => item.id !== entry.id)
+    mutate('stored-domains', (data: PasswordConfigEntry[] | undefined) => {
+        return data ? data.filter((item) => item.id !== entry.id) : [];
     }, false);
 
     try {
@@ -84,7 +85,7 @@ export const StoredDomainsContent = ({ entries }: Props) => {
         useState<PasswordConfigEntry>(initialDialogState);
     const [dialogMode, setDialogMode] = useState<
         ActionType.add | ActionType.edit
-    >();
+    >(ActionType.add);
     const dialogRef = useRef<HTMLDialogElement>(null);
 
     const { generatePasswords, masterPassword, setMasterPassword } =
@@ -115,7 +116,7 @@ export const StoredDomainsContent = ({ entries }: Props) => {
         }
 
         updatePairsWithPasswords();
-    }, [entries]);
+    }, [entries, generatePasswords]);
 
     function openDialog() {
         dialogRef.current?.showModal();
@@ -147,7 +148,7 @@ export const StoredDomainsContent = ({ entries }: Props) => {
                 >
                     Add New Domain
                 </button>
-                <span className="mt-4 flex w-full items-center rounded-lg bg-white p-3 text-slate-900 outline outline-0 outline-offset-4 outline-gray-900 drop-shadow-sm focus-within:outline-1">
+                <span className="mt-4 flex w-full items-center rounded-lg bg-white p-3 text-slate-900 outline outline-offset-4 outline-gray-900 drop-shadow-sm focus-within:outline-1">
                     <input
                         className="w-full  outline-none"
                         placeholder="Search"
