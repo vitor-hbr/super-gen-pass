@@ -8,6 +8,7 @@ import { Checkbox } from "./Checkbox";
 import { PasswordInput } from "./PasswordInput";
 import { usePasswordGenerator, useClipboard } from "../hooks";
 import { Pair } from "../hooks/usePasswordGenerator";
+import { debounce } from "../utils/debounce";
 
 export const SinglePasswordGenerator = () => {
     const [pairs, setPairs] = useState<Pair[]>([
@@ -72,7 +73,7 @@ export const SinglePasswordGenerator = () => {
                 {!currentPair?.password ? (
                     <button
                         onClick={() => {
-                            generatePasswords(pairs);
+                            debounce(generatePasswords, 1000)(pairs);
 
                             (document.activeElement as HTMLElement).blur();
                         }}

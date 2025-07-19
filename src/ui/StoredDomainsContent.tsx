@@ -97,7 +97,7 @@ export const StoredDomainsContent = ({ entries }: Props) => {
     const containerRef = useRef<HTMLUListElement>(null);
 
     const debouncedUpdatePairsWithPasswords = useDebounce(async () => {
-        setPairs(await generatePasswords(entries));
+        setPairs(await generatePasswords(entries, true));
     });
 
     const onMasterPasswordChange = (value: string) => {
@@ -109,14 +109,6 @@ export const StoredDomainsContent = ({ entries }: Props) => {
         containerRef.current && autoAnimate(containerRef.current);
         dialogRef.current && autoAnimate(dialogRef.current);
     }, [containerRef, dialogRef]);
-
-    useEffect(() => {
-        async function updatePairsWithPasswords() {
-            setPairs(await generatePasswords(entries, true));
-        }
-
-        updatePairsWithPasswords();
-    }, [entries, generatePasswords]);
 
     function openDialog() {
         dialogRef.current?.showModal();

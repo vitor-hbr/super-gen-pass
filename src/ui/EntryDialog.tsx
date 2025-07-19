@@ -4,7 +4,6 @@ import { PasswordConfigEntry } from "../utils/models";
 import { ActionType } from "../utils/constants";
 import { Checkbox } from "./Checkbox";
 import { toast } from "react-hot-toast";
-import { Toaster } from "react-hot-toast";
 
 export const initialDialogState: PasswordConfigEntry = {
     id: "",
@@ -26,9 +25,7 @@ export const EntryDialog = forwardRef<HTMLDialogElement, Props>(
     ({ dialogMode, dialogState, setDialogState, onConfirm, onCancel }, ref) => {
         return (
             <Modal ref={ref} className={"rounded-xl bg-gray-100 p-5"}>
-                <Toaster />
-
-                <span className="mb-4 flex w-full max-w-xs rounded-lg bg-white p-3 outline outline-0 outline-offset-4 outline-gray-900 drop-shadow-sm focus-within:outline-1">
+                <span className="mb-4 flex w-full max-w-xs rounded-lg bg-white p-3 outline outline-offset-4 outline-gray-900 drop-shadow-sm focus-within:outline-1">
                     <input
                         type="text"
                         placeholder="Enter the address of the site"

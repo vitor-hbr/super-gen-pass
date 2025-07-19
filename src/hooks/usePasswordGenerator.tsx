@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
 import { generate } from "supergenpass-lib";
 import { TOAST_MESSAGES } from "../utils/constants";
@@ -16,7 +16,7 @@ export const usePasswordGenerator = () => {
         return password.replace(/./g, "*");
     };
 
-    const generatePasswords = async (
+    const generatePasswords = useCallback(async (
         pairs: Pair[],
         runOnBackground?: boolean
     ) => {
@@ -49,23 +49,27 @@ export const usePasswordGenerator = () => {
         onCreatedPasswordToast();
 
         return resultingPairs;
-    };
+    }, [masterPassword]);
 
-    const onCreatedPasswordToast = () =>
+    const onCreatedPasswordToast = useCallback(() =>
         toast.success(TOAST_MESSAGES.success, {
             iconTheme: {
                 primary: "#7c3aed",
-                secondary: "#fff",
-            },
-        });
+                    secondary: "#fff",
+                },
+            }),
+        []
+    );
 
-    const onMissingInputToast = (message: string) =>
+    const onMissingInputToast = useCallback((message: string) =>
         toast.error(message, {
             iconTheme: {
                 primary: "#7c3aed",
                 secondary: "#fff",
             },
-        });
+            }),
+        []
+    );
 
     return {
         masterPassword,
