@@ -1,9 +1,26 @@
 @import "tailwindcss";
 
-@source "src/app/**/*.{js,ts,jsx,tsx}";
-@source "src/ui/**/*.{js,ts,jsx,tsx}";
+@source "../app/**/*.{js,ts,jsx,tsx}";
+@source "../ui/**/*.{js,ts,jsx,tsx}";
 
 @theme {
+  /* Colors - Modern Violet/Purple Palette */
+  --color-primary-50: oklch(0.97 0.01 291);
+  --color-primary-100: oklch(0.94 0.03 291);
+  --color-primary-200: oklch(0.88 0.06 291);
+  --color-primary-300: oklch(0.8 0.12 291);
+  --color-primary-400: oklch(0.7 0.19 291);
+  --color-primary-500: oklch(0.6 0.23 291);
+  --color-primary-600: oklch(0.5 0.23 291);
+  --color-primary-700: oklch(0.4 0.19 291);
+  --color-primary-800: oklch(0.3 0.14 291);
+  --color-primary-900: oklch(0.2 0.09 291);
+
+  /* Glassmorphism Variables */
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+
   /* Custom spacing scale */
   --spacing-0: 0px;
   --spacing-1: 4px;
@@ -28,11 +45,11 @@
   --spacing-20: 136px;
   --spacing-21: 144px;
 
-  /* Font families - add these */
+  /* Font families */
   --font-family-sans: var(--font-nunito, sans-serif);
   --font-family-display: var(--font-staatliches, sans-serif);
 
-  /* Custom font sizes - correct syntax for Tailwind CSS v4 */
+  /* Custom font sizes */
   --font-size-h1-desktop: 6rem;
   --font-size-h1-desktop--line-height: 7.5rem;
   --font-size-h1-mobile: 3.5rem;
@@ -53,19 +70,21 @@
   /* Min-height values */
   --min-height-screen: 100dvh;
 
-  /* Height values */  
+  /* Height values */
   --height-screen: 100dvh;
 
   /* Custom animations */
   --animate-gradient-text: gradient-text 5s ease infinite;
-  --animate-overlay-fade-in: overlay-fade-in 1s ease-in;
-  --animate-modal-fade-in: modal-fade-in 1s ease-in-out;
+  --animate-overlay-fade-in: overlay-fade-in 0.3s ease-out;
+  --animate-modal-fade-in: modal-fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-slide-up: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Custom breakpoints */
   --breakpoint-lg: 1024px;
 }
 
-/* Define custom utilities for font sizes */
+/* Define custom utilities */
 @utility text-h1-mobile {
   font-size: theme(--font-size-h1-mobile);
   line-height: theme(--font-size-h1-mobile--line-height);
@@ -114,9 +133,27 @@
   font-family: theme(--font-family-sans);
 }
 
+@utility glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+@utility glass-hover {
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+  }
+}
+
 /* Keyframes for custom animations */
 @keyframes gradient-text {
-  0%, 100% {
+  0%,
+  100% {
     background-size: 200% 200%;
     background-position: left center;
   }
@@ -127,116 +164,187 @@
 }
 
 @keyframes overlay-fade-in {
-  0% { background: rgba(0, 0, 0, 0.0); }
-  100% { background: rgba(0, 0, 0, 0.2); }
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes modal-fade-in {
-  0% { opacity: 0; transform: translateY(100px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
-/* Your existing styles */
-*{
-    outline-color: #111827;
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Global Styles */
+* {
+  outline-color: var(--color-primary-500);
 }
 
 a {
   text-decoration: none;
+  transition: color 0.2s ease;
 
   &:hover {
-    text-decoration: underline;
+    color: var(--color-primary-400);
   }
 }
 
-html {
-    --s: 600px;
-    --c1: #111827;
-    --c2: #0b101a;
-    
-    --_g: var(--c1) 90deg,var(--c2) 0 135deg,#0000 0;
-    background:
-      conic-gradient(from  -45deg at calc(100%/3)   calc(100%/3)  ,var(--c1) 90deg,#0000 0 ),
-      conic-gradient(from -135deg at calc(100%/3)   calc(2*100%/3),var(--_g)),
-      conic-gradient(from  135deg at calc(2*100%/3) calc(2*100%/3),var(--_g)),
-      conic-gradient(from   45deg at calc(2*100%/3) calc(100%/3)  ,var(--_g),var(--c1) 0 225deg,var(--c2) 0);
-    background-size: var(--s) var(--s);
+body {
+  background-color: #0f0518;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(124, 58, 237, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(236, 72, 153, 0.15) 0px, transparent 50%),
+    radial-gradient(
+      at 100% 100%,
+      rgba(59, 130, 246, 0.15) 0px,
+      transparent 50%
+    ),
+    radial-gradient(at 0% 100%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: white;
+  font-family: var(--font-family-sans);
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+
+  &::-webkit-slider-runnable-track {
+    background: rgba(255, 255, 255, 0.1);
+    height: 4px;
+    border-radius: 2px;
   }
 
-input[type='range'] {
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    margin-top: -6px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--color-primary-500);
+    box-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
+    transition:
+      transform 0.2s ease,
+      background 0.2s ease;
+  }
+
+  &::-moz-range-track {
+    background: rgba(255, 255, 255, 0.1);
+    height: 4px;
+    border-radius: 2px;
+  }
+
+  &::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--color-primary-500);
+    box-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
+    transition:
+      transform 0.2s ease,
+      background 0.2s ease;
+  }
+
+  &:hover {
     &::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;
-        width: 13px;
-        height: 13px;
-        border-radius: 50%;
-        background: #7c3aed;
-        cursor: pointer;
+      transform: scale(1.2);
+      background: var(--color-primary-400);
     }
-
     &::-moz-range-thumb {
-        width: 13px;
-        height: 13px;
-        border-radius: 50%;
-        background: #7c3aed;
-        cursor: pointer;
+      transform: scale(1.2);
+      background: var(--color-primary-400);
     }
-
-    &::-ms-thumb {
-        width: 13px;
-        height: 13px;
-        border-radius: 50%;
-        background: #7c3aed;
-        cursor: pointer;
-    }
-
-    &:hover {
-        background: #111827;
-
-        &::-webkit-slider-thumb {
-            background: #fff;
-        }
-
-        &::-moz-range-thumb {
-            background: #fff;
-        }
-
-        &::-ms-thumb {
-            background: #fff;
-        }
-    }
+  }
 }
 
 @layer base {
+  h1 {
+    @apply text-h1-mobile;
+  }
+  h3 {
+    @apply text-h3-mobile bg-gradient-to-r from-white to-white/70 bg-clip-text font-bold tracking-tight text-transparent;
+  }
+  h5 {
+    @apply text-h5-mobile;
+  }
+  p {
+    @apply text-p-mobile text-slate-300;
+  }
+
+  @media (min-width: 1024px) {
     h1 {
-      @apply text-h1-mobile;
+      @apply text-h1-desktop;
     }
     h3 {
-      @apply text-h3-mobile;
+      @apply text-h3-desktop;
     }
     h5 {
-      @apply text-h5-mobile;
+      @apply text-h5-desktop;
     }
     p {
-      @apply text-p-mobile;
-    }
-  
-    @media (min-width: 1024px) {
-      h1 {
-        @apply text-h1-desktop;
-      }
-      h3 {
-        @apply text-h3-desktop;
-      }
-      h5 {
-        @apply text-h5-desktop;
-      }
-      p {
-        @apply text-p-desktop;
-      }
-    }
-
-    dialog::backdrop {
-      @apply animate-overlay-fade-in fixed left-0 top-0 z-10 h-screen w-screen bg-black/10 backdrop-blur;
+      @apply text-p-desktop;
     }
   }
+
+  dialog::backdrop {
+    @apply animate-overlay-fade-in fixed inset-0 z-40 bg-black/60 backdrop-blur-sm;
+  }
+}
+
+/* View Transitions */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.3s;
+}

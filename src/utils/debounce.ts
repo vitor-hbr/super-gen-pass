@@ -4,12 +4,23 @@ export const debounce = <F extends (...args: any[]) => any>(
 ) => {
   let timeout: NodeJS.Timeout | null = null;
 
-  return (...args: Parameters<F>): Promise<ReturnType<F>> =>
-    new Promise((resolve) => {
-      if (timeout) {
-        clearTimeout(timeout);
-      }
+  const debouncedFn = (...args: Parameters<F>): void => {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
 
-      timeout = setTimeout(() => resolve(func(...args)), waitFor);
-    });
+    timeout = setTimeout(() => {
+      timeout = null;
+      func(...args);
+    }, waitFor);
+  };
+
+  debouncedFn.cancel = () => {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+  };
+
+  return debouncedFn;
 };

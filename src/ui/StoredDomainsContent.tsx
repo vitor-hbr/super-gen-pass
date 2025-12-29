@@ -1,189 +1,271 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import autoAnimate from "@formkit/auto-animate";
+import { useRef, useState, useEffect, useTransition, useCallback } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 import { PasswordInput } from "./PasswordInput";
 import { PasswordConfigEntry } from "../utils/models";
-import { addNewConfigEntry, removeConfigEntry } from "../app/actions";
+import {
+  addNewConfigEntry,
+  removeConfigEntry,
+  updateConfigEntry,
+} from "../app/actions";
 import { ActionType } from "../utils/constants";
 import {
-    useClipboard,
-    usePasswordGenerator,
-    useDebounce,
-    Pair,
+  useClipboard,
+  usePasswordGenerator,
+  useDebounce,
+  Pair,
 } from "../hooks";
 import { StoredCard } from "./StoredCard";
 import { EntryDialog, initialDialogState } from "./EntryDialog";
-import { FaSearch } from "react-icons/fa";
-import { mutate } from "swr";
+import { FaPlus, FaSearch } from "react-icons/fa";
 import { toast } from "react-hot-toast";
+import { useViewTransition } from "../hooks/useViewTransition";
 
 type Props = {
-    entries: PasswordConfigEntry[];
+  entries: PasswordConfigEntry[];
 };
 
-const confirmEntryEdit = async (entry: PasswordConfigEntry) => {
-    mutate('stored-domains', (data: PasswordConfigEntry[] | undefined) => {
-        if (!data) return [entry];
-        return data.map((item) => {
-            if (item.id === entry.id) {
-                return entry;
-            }
-            return item;
-        });
-    });
-
-    try {
-        await addNewConfigEntry(entry);
-        mutate('stored-domains');
-    } catch (error) {
-        toast.error('Failed to edit entry');
-        mutate('stored-domains');
-    }
-}
-
-const confirmEntryAdd = async (entry: PasswordConfigEntry) => {
-    mutate('stored-domains', (data: PasswordConfigEntry[] | undefined) => {
-        return [...(data || []), entry];
-    });
-
-    try {
-        await addNewConfigEntry(entry);
-        mutate('stored-domains');
-    } catch (error) {
-        toast.error('Failed to create entry');
-        mutate('stored-domains');
-    }
-}
-
-const handleRemoveEntry = async (entry: PasswordConfigEntry) => {
-    const isConfirmed = window.confirm(
-        `Are you sure you want to remove the entry for "${entry.url}"?`
-    );
-    
-    if (!isConfirmed) {
-        return;
-    }
-
-    mutate('stored-domains', (data: PasswordConfigEntry[] | undefined) => {
-        return data ? data.filter((item) => item.id !== entry.id) : [];
-    }, false);
-
-    try {
-        await removeConfigEntry(entry.id);
-        mutate('stored-domains');
-    } catch (error) {
-        toast.error('Failed to remove entry');
-        mutate('stored-domains');
-    }
-}
-
 export const StoredDomainsContent = ({ entries }: Props) => {
-    const { clipboardText, copyToClipboard } = useClipboard();
-    const [dialogState, setDialogState] =
-        useState<PasswordConfigEntry>(initialDialogState);
-    const [dialogMode, setDialogMode] = useState<
-        ActionType.add | ActionType.edit
-    >(ActionType.add);
-    const dialogRef = useRef<HTMLDialogElement>(null);
+  const { clipboardText, copyToClipboard } = useClipboard();
+  const [dialogState, setDialogState] =
+    useState<PasswordConfigEntry>(initialDialogState);
+  const [dialogMode, setDialogMode] = useState<
+    ActionType.add | ActionType.edit
+  >(ActionType.add);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const { startViewTransition } = useViewTransition();
+  const [isPending, startTransition] = useTransition();
 
-    const { generatePasswords, masterPassword, setMasterPassword } =
-        usePasswordGenerator();
-    const [search, setSearch] = useState<string>("");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
 
-    let [pairs, setPairs] = useState<Pair[]>(entries);
+  const search = searchParams.get("q") ?? "";
 
-    const containerRef = useRef<HTMLUListElement>(null);
+  const { generatePasswords, masterPassword, setMasterPassword } =
+    usePasswordGenerator();
 
-    const debouncedUpdatePairsWithPasswords = useDebounce(async () => {
-        setPairs(await generatePasswords(entries, true));
-    });
+  let [pairs, setPairs] = useState<Pair[]>(entries);
+  const isMutatingRef = useRef(false);
 
-    const onMasterPasswordChange = (value: string) => {
-        setMasterPassword(value);
-        debouncedUpdatePairsWithPasswords();
+  useEffect(() => {
+    // Skip sync if we're in the middle of a local mutation
+    if (isMutatingRef.current) {
+      isMutatingRef.current = false;
+      return;
+    }
+    const update = async () => {
+      const newPairs = await generatePasswords(entries, true);
+      startViewTransition(() => {
+        setPairs(newPairs);
+      });
     };
+    update();
+  }, [entries]);
 
-    useEffect(() => {
-        containerRef.current && autoAnimate(containerRef.current);
-        dialogRef.current && autoAnimate(dialogRef.current);
-    }, [containerRef, dialogRef]);
+  const debouncedUpdatePairsWithPasswords = useDebounce(async () => {
+    const newPairs = await generatePasswords(entries, true);
+    setPairs(newPairs);
+  }, 150);
 
-    function openDialog() {
-        dialogRef.current?.showModal();
+  const updateSearchParams = useCallback(
+    (value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (value) {
+        params.set("q", value);
+      } else {
+        params.delete("q");
+      }
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    },
+    [searchParams, router, pathname],
+  );
+
+  const debouncedUpdateSearchParams = useDebounce((value: string) => {
+    updateSearchParams(value);
+  }, 150);
+
+  const onMasterPasswordChange = (value: string) => {
+    setMasterPassword(value);
+    debouncedUpdatePairsWithPasswords();
+  };
+
+  function openDialog() {
+    dialogRef.current?.showModal();
+  }
+
+  function closeDialog() {
+    dialogRef.current?.close();
+  }
+
+  const filteredPairs = pairs.filter((pair) =>
+    pair.url.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  const handleConfirm = async () => {
+    closeDialog();
+    const optimisticEntry = { ...dialogState };
+
+    if (masterPassword) {
+      const [entryWithPassword] = await generatePasswords(
+        [optimisticEntry],
+        true,
+      );
+      if (entryWithPassword) Object.assign(optimisticEntry, entryWithPassword);
     }
 
-    function closeDialog() {
-        dialogRef.current?.close();
+    // Update local state immediately for instant feedback
+    if (dialogMode === ActionType.add) {
+      setPairs((prev) => [...prev, optimisticEntry]);
+    } else {
+      setPairs((prev) =>
+        prev.map((p) => (p.id === optimisticEntry.id ? optimisticEntry : p)),
+      );
     }
+    isMutatingRef.current = true;
 
-    const filteredPairs = pairs.filter((pair) =>
-        pair.url.toLowerCase().includes(search.toLowerCase())
+    startTransition(async () => {
+      try {
+        if (dialogMode === ActionType.add) {
+          await addNewConfigEntry(dialogState);
+        } else {
+          await updateConfigEntry(dialogState);
+        }
+      } catch (error) {
+        toast.error(
+          dialogMode === ActionType.add
+            ? "Failed to create entry"
+            : "Failed to edit entry",
+        );
+        // Revert on error
+        if (dialogMode === ActionType.add) {
+          setPairs((prev) => prev.filter((p) => p.id !== optimisticEntry.id));
+        } else {
+          // Revert edit by restoring from entries prop
+          const original = entries.find((e) => e.id === optimisticEntry.id);
+          if (original) {
+            const [originalWithPassword] = await generatePasswords(
+              [original],
+              true,
+            );
+            if (originalWithPassword) {
+              setPairs((prev) =>
+                prev.map((p) =>
+                  p.id === optimisticEntry.id ? originalWithPassword : p,
+                ),
+              );
+            }
+          }
+        }
+      }
+      setDialogState(initialDialogState);
+    });
+  };
+
+  const handleRemove = async (pair: Pair) => {
+    const isConfirmed = window.confirm(
+      `Are you sure you want to remove the entry for "${pair.url}"?`,
     );
 
-    return (
-        <div className="mx-auto flex w-full flex-col items-center gap-11 p-4 text-white lg:w-auto lg:p-8">
-            <section className="flex w-full flex-col gap-2">
-                <h3 className="mx-auto pb-5">Stored Domains</h3>
-                <PasswordInput
-                    onChange={onMasterPasswordChange}
-                    value={masterPassword}
-                    placeholder="Enter your master password"
-                />
-                <button
-                    className="flex flex-row items-center justify-center rounded-lg bg-violet-600 p-3 text-white transition-all hover:bg-white hover:text-violet-600"
-                    onClick={() => {
-                        setDialogMode(ActionType.add);
-                        openDialog();
-                    }}
-                >
-                    Add New Domain
-                </button>
-                <span className="mt-4 flex w-full items-center rounded-lg bg-white p-3 text-slate-900 outline outline-offset-4 outline-gray-900 drop-shadow-sm focus-within:outline-1">
-                    <input
-                        className="w-full  outline-none"
-                        placeholder="Search"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
-                    <FaSearch className="text-violet-600" />
-                </span>
-            </section>
-            <ul className="flex w-full flex-col gap-4" ref={containerRef}>
-                {filteredPairs.map((pair) => (
-                    <StoredCard
-                        key={pair.id}
-                        pair={pair}
-                        editEntry={() => {
-                            setDialogState(pair);
-                            setDialogMode(ActionType.edit);
-                            openDialog();
-                        }}
-                        removeEntry={async () => {
-                            await handleRemoveEntry(pair);
-                        }}
-                        isCopied={clipboardText === pair.password}
-                        copyToClipboard={copyToClipboard}
-                    />
-                ))}
-            </ul>
-            <EntryDialog
-                ref={dialogRef}
-                onConfirm={async () => {
-                    closeDialog();
-                    if (dialogMode === ActionType.add) {
-                        await confirmEntryAdd(dialogState);
-                    } else {
-                        await confirmEntryEdit(dialogState);
-                    }
-                    setDialogState(initialDialogState);
-                }}
-                onCancel={closeDialog}
-                dialogMode={dialogMode}
-                dialogState={dialogState}
-                setDialogState={setDialogState}
-            />
+    if (!isConfirmed) {
+      return;
+    }
+
+    // Update local state immediately for instant feedback
+    setPairs((prev) => prev.filter((p) => p.id !== pair.id));
+    isMutatingRef.current = true;
+
+    startTransition(async () => {
+      try {
+        await removeConfigEntry(pair.id);
+      } catch (error) {
+        toast.error("Failed to remove entry");
+        // Revert on error by adding the pair back
+        setPairs((prev) => [...prev, pair]);
+      }
+    });
+  };
+
+  return (
+    <div className="animate-slide-up mx-auto flex w-full max-w-4xl flex-col items-center gap-8 p-6 lg:p-12">
+      <section className="glass flex w-full flex-col gap-6 rounded-2xl p-6 lg:p-8">
+        <div className="flex flex-col gap-2 text-center lg:text-left">
+          <h3 className="bg-gradient-to-r from-white to-white/60 bg-clip-text text-3xl font-bold text-transparent">
+            Stored Domains
+          </h3>
+          <p className="text-sm text-white/60">
+            Manage your password configurations securely
+          </p>
         </div>
-    );
+
+        <div className="flex w-full flex-col gap-4 md:flex-row">
+          <div className="flex-1">
+            <PasswordInput
+              onChange={onMasterPasswordChange}
+              value={masterPassword}
+              placeholder="Master Password"
+              className="h-12"
+            />
+          </div>
+          <span className="group relative flex-1">
+            <input
+              className="h-12 w-full rounded-xl border border-white/10 bg-white/5 px-4 pl-11 text-white placeholder-white/40 transition-all outline-none focus:border-violet-500/50 focus:bg-white/10"
+              placeholder="Search domains..."
+              defaultValue={search}
+              onChange={(e) => {
+                debouncedUpdateSearchParams(e.target.value);
+              }}
+            />
+            <FaSearch className="absolute top-1/2 left-4 -translate-y-1/2 text-white/40 transition-colors group-focus-within:text-violet-400" />
+          </span>
+          <button
+            className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl bg-violet-600 px-6 font-semibold text-white transition-all hover:scale-105 hover:bg-violet-500 hover:shadow-lg hover:shadow-violet-600/30 active:scale-95"
+            onClick={() => {
+              setDialogState(initialDialogState);
+              setDialogMode(ActionType.add);
+              openDialog();
+            }}
+          >
+            <FaPlus className="text-sm" />
+            <span>Add New</span>
+          </button>
+        </div>
+      </section>
+
+      <ul className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
+        {filteredPairs.map((pair) => (
+          <StoredCard
+            key={pair.id}
+            pair={pair}
+            editEntry={() => {
+              setDialogState(pair);
+              setDialogMode(ActionType.edit);
+              openDialog();
+            }}
+            removeEntry={() => handleRemove(pair)}
+            isCopied={clipboardText === pair.password}
+            copyToClipboard={copyToClipboard}
+          />
+        ))}
+      </ul>
+      {filteredPairs.length === 0 && (
+        <div className="glass animate-fade-in col-span-full w-full rounded-xl py-12 text-center text-white/40">
+          {search
+            ? "No domains found matching your search."
+            : "No stored domains yet. Add one above!"}
+        </div>
+      )}
+
+      <EntryDialog
+        ref={dialogRef}
+        onConfirm={handleConfirm}
+        onCancel={closeDialog}
+        dialogMode={dialogMode}
+        dialogState={dialogState}
+        setDialogState={setDialogState}
+      />
+    </div>
+  );
 };

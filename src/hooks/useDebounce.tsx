@@ -1,23 +1,35 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { debounce } from "../utils/debounce";
 
-export const useDebounce = (
-    callback: (...args: any[]) => any,
-    waitFor: number = 250
+export const useDebounce = <T extends (...args: any[]) => any>(
+  callback: T,
+  waitFor: number = 250,
 ) => {
-    const ref = useRef<Function>(() => {});
+  const callbackRef = useRef(callback);
 
-    useEffect(() => {
-        ref.current = callback;
-    }, [callback]);
+  // Always keep the ref up to date with the latest callback
+  useEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
 
-    const debouncedCallback = useMemo(() => {
-        const func = () => {
-            ref.current();
-        };
+  // Create debounced function once, stable reference
+  const debouncedFnRef = useRef<ReturnType<typeof debounce> | null>(null);
 
-        return debounce(func, waitFor);
-    }, [waitFor]);
+  if (!debouncedFnRef.current) {
+    debouncedFnRef.current = debounce((...args: any[]) => {
+      callbackRef.current(...args);
+    }, waitFor);
+  }
 
-    return debouncedCallback;
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      debouncedFnRef.current?.cancel();
+    };
+  }, []);
+
+  // Return a stable callback that calls the debounced function
+  return useCallback((...args: Parameters<T>) => {
+    debouncedFnRef.current?.(...args);
+  }, []) as (...args: Parameters<T>) => void;
 };

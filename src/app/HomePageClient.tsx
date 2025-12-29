@@ -13,44 +13,41 @@ interface HomePageClientProps {
 
 const fetcher = async () => {
   const supabase = createClient();
-  const { data, error } = await supabase
-    .from(DATABASE_TABLES.configs)
-    .select();
-  
+  const { data, error } = await supabase.from(DATABASE_TABLES.configs).select();
+
   if (error) throw error;
   return data;
 };
 
-
 export function HomePageClient({ initialEntries }: HomePageClientProps) {
   const { user, loading } = useAuth();
 
-  const { data: entries, error, mutate: mutateEntries } = useSWR(
-    user ? 'stored-domains' : null,
-    fetcher,
-    {
-      fallbackData: initialEntries,
-      revalidateOnFocus: true,
-      revalidateOnReconnect: true,
-    }
-  );
+  const {
+    data: entries,
+    error,
+    mutate: mutateEntries,
+  } = useSWR(user ? "stored-domains" : null, fetcher, {
+    fallbackData: initialEntries,
+    revalidateOnFocus: true,
+    revalidateOnReconnect: true,
+  });
 
   const supabase = createClient();
 
   useEffect(() => {
     if (user) {
       const channel = supabase
-        .channel('stored-domains-changes')
+        .channel("stored-domains-changes")
         .on(
-          'postgres_changes',
+          "postgres_changes",
           {
-            event: '*',
-            schema: 'public',
+            event: "*",
+            schema: "public",
             table: DATABASE_TABLES.configs,
           },
           () => {
             mutateEntries();
-          }
+          },
         )
         .subscribe();
 
@@ -64,7 +61,7 @@ export function HomePageClient({ initialEntries }: HomePageClientProps) {
   if (loading) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <div className="text-white">Loading...</div>
+        <div className="animate-pulse text-white/50">Loading...</div>
       </div>
     );
   }
@@ -74,18 +71,23 @@ export function HomePageClient({ initialEntries }: HomePageClientProps) {
   }
 
   return (
-    <div className="font-sans flex flex-1 flex-col items-center p-4 md:flex-row md:justify-around md:px-12 ">
-      <div className="md:mb-48 w-full max-w-[600px] select-none py-6 text-center text-white md:w-2/4 md:text-left">
-        <h1 className="animate-gradient-text bg-gradient-to-r from-violet-600 via-slate-300  to-purple-400 bg-clip-text pb-3 font-bold text-transparent duration-1000">
-          Super Gen Pass!
-        </h1>
-        <p>
-          A way for you to be more secure, and not have a single point of
-          failure while using a password manager. Generate a password for each
-          of the domains you need, using a master password.
+    <div className="flex min-h-[calc(100vh-80px)] w-full flex-col items-center justify-center p-6 font-sans md:flex-row md:gap-12 lg:gap-24">
+      <div className="mb-12 flex w-full max-w-[500px] flex-col justify-center text-center md:mb-0 md:text-left">
+        <div className="animate-slide-up [animation-duration:1s]">
+          <h1 className="font-display animate-gradient-text bg-300% bg-gradient-to-r from-violet-400 via-fuchsia-300 to-violet-400 bg-clip-text pb-4 text-transparent">
+            Super Gen Pass
+          </h1>
+        </div>
+        <p className="animate-fade-in text-lg leading-relaxed text-indigo-100/80 [animation-delay:200ms]">
+          A smarter way to manage passwords without a single point of failure.
+          Generate unique, secure passwords for every domain using just one
+          master key.
         </p>
       </div>
-      <SinglePasswordGenerator />
+
+      <div className="animate-fade-in [animation-delay:400ms]">
+        <SinglePasswordGenerator />
+      </div>
     </div>
   );
-} 
+}
