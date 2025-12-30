@@ -68,7 +68,7 @@ export const StoredDomainsContent = ({ entries }: Props) => {
   const debouncedUpdatePairsWithPasswords = useDebounce(async () => {
     const newPairs = await generatePasswords(entries, true);
     setPairs(newPairs);
-  }, 150);
+  }, 100);
 
   const updateSearchParams = useCallback(
     (value: string) => {
