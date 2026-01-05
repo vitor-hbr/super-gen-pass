@@ -82,6 +82,36 @@
 
   /* Custom breakpoints */
   --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* Responsive container widths */
+  --container-sm: 400px; /* mobile */
+  --container-md: 480px; /* notebook */
+  --container-lg: 560px; /* desktop */
+  --container-xl: 640px; /* large desktop */
+  --container-stored-sm: 100%; /* mobile */
+  --container-stored-md: 56rem; /* notebook */
+  --container-stored-lg: 64rem; /* desktop */
+  --container-stored-xl: 72rem; /* large desktop 1440p+ */
+
+  /* Responsive input/button heights */
+  --input-height-sm: 44px; /* mobile - larger touch targets */
+  --input-height-md: 48px; /* notebook */
+  --input-height-lg: 52px; /* desktop */
+  --input-height-xl: 56px; /* large desktop */
+
+  /* Responsive padding */
+  --card-padding-sm: 20px;
+  --card-padding-md: 24px;
+  --card-padding-lg: 32px;
+  --card-padding-xl: 40px;
+
+  /* Input text sizes - prevent cutoff */
+  --input-text-sm: 14px;
+  --input-text-md: 15px;
+  --input-text-lg: 16px;
+  --input-text-xl: 17px;
 }
 
 /* Define custom utilities */

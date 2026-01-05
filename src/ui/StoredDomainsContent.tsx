@@ -42,7 +42,7 @@ export const StoredDomainsContent = ({ entries }: Props) => {
   const router = useRouter();
   const pathname = usePathname();
 
-  const search = searchParams.get("q") ?? "";
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") ?? "");
 
   const { generatePasswords, masterPassword, setMasterPassword } =
     usePasswordGenerator();
@@ -101,7 +101,7 @@ export const StoredDomainsContent = ({ entries }: Props) => {
   }
 
   const filteredPairs = pairs.filter((pair) =>
-    pair.url.toLowerCase().includes(search.toLowerCase()),
+    pair.url.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const handleConfirm = async () => {
@@ -189,8 +189,8 @@ export const StoredDomainsContent = ({ entries }: Props) => {
   };
 
   return (
-    <div className="animate-slide-up mx-auto flex w-full max-w-4xl flex-col items-center gap-8 p-6 lg:p-12">
-      <section className="glass flex w-full flex-col gap-6 rounded-2xl p-6 lg:p-8">
+    <div className="animate-slide-up mx-auto flex w-full max-w-full flex-col items-center gap-6 p-4 lg:max-w-[56rem] lg:gap-8 lg:p-8 xl:max-w-[64rem] xl:gap-10 xl:p-12 2xl:max-w-[72rem] 2xl:p-16">
+      <section className="glass flex w-full flex-col gap-4 rounded-2xl p-4 lg:gap-5 lg:p-6 xl:gap-6 xl:p-8 2xl:p-10">
         <div className="flex flex-col gap-2 text-center lg:text-left">
           <h3 className="bg-gradient-to-r from-white to-white/60 bg-clip-text text-3xl font-bold text-transparent">
             Stored Domains
@@ -206,22 +206,24 @@ export const StoredDomainsContent = ({ entries }: Props) => {
               onChange={onMasterPasswordChange}
               value={masterPassword}
               placeholder="Master Password"
-              className="h-12"
+              className="min-h-[44px] lg:min-h-[48px] xl:min-h-[52px] 2xl:min-h-[56px]"
             />
           </div>
           <span className="group relative flex-1">
             <input
-              className="h-12 w-full rounded-xl border border-white/10 bg-white/5 px-4 pl-11 text-white placeholder-white/40 transition-all outline-none focus:border-violet-500/50 focus:bg-white/10"
+              className="min-h-[44px] w-full rounded-xl border border-white/10 bg-white/5 px-4 pl-11 text-sm text-white placeholder-white/40 transition-all outline-none focus:border-violet-500/50 focus:bg-white/10 lg:min-h-[48px] lg:text-[15px] xl:min-h-[52px] xl:text-base 2xl:min-h-[56px] 2xl:text-[17px]"
               placeholder="Search domains..."
-              defaultValue={search}
+              value={searchQuery}
               onChange={(e) => {
-                debouncedUpdateSearchParams(e.target.value);
+                const newValue = e.target.value;
+                setSearchQuery(newValue);
+                debouncedUpdateSearchParams(newValue);
               }}
             />
             <FaSearch className="absolute top-1/2 left-4 -translate-y-1/2 text-white/40 transition-colors group-focus-within:text-violet-400" />
           </span>
           <button
-            className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl bg-violet-600 px-6 font-semibold text-white transition-all hover:scale-105 hover:bg-violet-500 hover:shadow-lg hover:shadow-violet-600/30 active:scale-95"
+            className="flex min-h-[44px] cursor-pointer items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 text-sm font-semibold text-white transition-all hover:scale-105 hover:bg-violet-500 hover:shadow-lg hover:shadow-violet-600/30 active:scale-95 lg:min-h-[48px] lg:px-5 lg:text-[15px] xl:min-h-[52px] xl:px-6 xl:text-base 2xl:min-h-[56px]"
             onClick={() => {
               setDialogState(initialDialogState);
               setDialogMode(ActionType.add);
@@ -252,7 +254,7 @@ export const StoredDomainsContent = ({ entries }: Props) => {
       </ul>
       {filteredPairs.length === 0 && (
         <div className="glass animate-fade-in col-span-full w-full rounded-xl py-12 text-center text-white/40">
-          {search
+          {searchQuery
             ? "No domains found matching your search."
             : "No stored domains yet. Add one above!"}
         </div>

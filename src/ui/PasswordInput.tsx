@@ -31,7 +31,7 @@ export const PasswordInput = ({
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-full w-full rounded-xl bg-transparent px-4 py-3 pr-12 text-white placeholder-white/40 outline-none"
+        className="h-full min-h-[44px] w-full rounded-xl bg-transparent px-4 py-3 pr-10 text-sm text-white placeholder-white/40 outline-none lg:min-h-[48px] lg:text-[15px] xl:min-h-[52px] xl:text-base 2xl:min-h-[56px] 2xl:text-[17px]"
       />
       <button
         onClick={() => setIsVisible((s) => !s)}

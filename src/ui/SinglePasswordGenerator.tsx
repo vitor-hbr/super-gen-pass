@@ -34,7 +34,7 @@ export const SinglePasswordGenerator = () => {
   }, 150);
 
   return (
-    <main className="glass flex w-full max-w-sm flex-col items-center justify-center rounded-2xl p-8 text-white transition-all duration-300 select-none hover:shadow-[0_0_40px_rgba(124,58,237,0.3)]">
+    <main className="glass flex w-full max-w-[400px] flex-col items-center justify-center rounded-2xl p-5 text-white transition-all duration-300 select-none hover:shadow-[0_0_40px_rgba(124,58,237,0.3)] lg:max-w-[480px] lg:p-6 xl:max-w-[560px] xl:p-8 2xl:max-w-[640px] 2xl:p-10">
       <PasswordInput
         onChange={(value) => setMasterPassword(value)}
         value={masterPassword}
@@ -42,7 +42,7 @@ export const SinglePasswordGenerator = () => {
         className="mb-6 w-full"
       />
 
-      <div className="mb-6 w-full rounded-xl bg-white/5 p-1 ring-1 ring-white/10 transition-all focus-within:bg-white/10 focus-within:ring-violet-500/50">
+      <div className="mb-4 w-full rounded-xl bg-white/5 p-1 ring-1 ring-white/10 transition-all focus-within:bg-white/10 focus-within:ring-violet-500/50 lg:mb-5 xl:mb-6">
         <input
           type="text"
           placeholder="Enter the address of the site"
@@ -57,7 +57,7 @@ export const SinglePasswordGenerator = () => {
               },
             ]);
           }}
-          className="w-full bg-transparent p-3 text-sm text-white placeholder-white/50 outline-none"
+          className="min-h-[44px] w-full bg-transparent p-3 text-sm text-white placeholder-white/50 outline-none lg:min-h-[48px] lg:text-[15px] xl:min-h-[52px] xl:text-base 2xl:min-h-[56px] 2xl:text-[17px]"
         />
       </div>
 
@@ -68,7 +68,7 @@ export const SinglePasswordGenerator = () => {
               handleGenerate(pairs);
               (document.activeElement as HTMLElement).blur();
             }}
-            className="group flex flex-1 items-center justify-center gap-3 rounded-xl bg-violet-600 p-3 font-semibold text-white transition-all hover:bg-violet-500 hover:shadow-lg hover:shadow-violet-600/30 active:scale-[0.98]"
+            className="group flex min-h-[44px] flex-1 items-center justify-center gap-3 rounded-xl bg-violet-600 p-3 text-sm font-semibold text-white transition-all hover:bg-violet-500 hover:shadow-lg hover:shadow-violet-600/30 active:scale-[0.98] lg:min-h-[48px] lg:text-[15px] xl:min-h-[52px] xl:text-base 2xl:min-h-[56px] 2xl:text-[17px]"
           >
             Generate Password
             <FaKey className="transition-transform group-hover:rotate-12" />
@@ -77,7 +77,7 @@ export const SinglePasswordGenerator = () => {
           <div className="flex flex-1 rounded-xl bg-white/5 ring-1 ring-white/10">
             <button
               onClick={() => setIsGeneratedPasswordVisible((prev) => !prev)}
-              className="flex-1 truncate rounded-l-xl p-3 text-left text-violet-200 transition-colors hover:bg-white/5 hover:text-white"
+              className="min-h-[44px] flex-1 truncate rounded-l-xl p-3 text-left text-sm text-violet-200 transition-colors hover:bg-white/5 hover:text-white lg:min-h-[48px] lg:text-[15px] xl:min-h-[52px] xl:text-base 2xl:min-h-[56px] 2xl:text-[17px]"
             >
               {isGeneratedPasswordVisible
                 ? currentPair?.password

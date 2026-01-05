@@ -41,7 +41,7 @@ export const StoredCard = ({
   return (
     <li
       onClick={copyPassword}
-      className={`glass-hover group animate-fade-in flex w-full cursor-pointer flex-row items-center justify-between gap-4 rounded-xl border bg-white/5 p-4 transition-all duration-300 hover:bg-white/10 ${
+      className={`glass-hover group animate-fade-in flex w-full cursor-pointer flex-row items-center justify-between gap-4 rounded-xl border bg-white/5 p-3 transition-all duration-300 hover:bg-white/10 lg:p-4 xl:p-5 ${
         isCopied
           ? "border-green-500/50 shadow-[0_0_15px_rgba(34,197,94,0.2)] hover:border-green-500/50"
           : "border-white/5"
