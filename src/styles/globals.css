@@ -233,7 +233,33 @@
   }
 }
 
+@keyframes dialog-view-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dialog-view-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+}
+
 /* Global Styles */
+:root {
+  color-scheme: dark;
+}
+
 * {
   outline-color: var(--color-primary-500);
 }
@@ -261,6 +287,7 @@ body {
   background-attachment: fixed;
   color: white;
   font-family: var(--font-family-sans);
+  min-height: 100dvh;
   overflow-x: hidden;
 }
 
@@ -374,7 +401,28 @@ input[type="range"] {
 }
 
 /* View Transitions */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 0.3s;
+::view-transition-group(*) {
+  animation-duration: 260ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation-duration: 260ms;
+}
+
+::view-transition-old(entry-dialog) {
+  animation-name: dialog-view-out;
+}
+
+::view-transition-new(entry-dialog) {
+  animation-name: dialog-view-in;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 1ms;
+  }
 }

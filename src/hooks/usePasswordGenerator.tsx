@@ -16,6 +16,28 @@ export const usePasswordGenerator = () => {
     return password.replace(/./g, "*");
   };
 
+  const onCreatedPasswordToast = useCallback(
+    () =>
+      toast.success(TOAST_MESSAGES.success, {
+        iconTheme: {
+          primary: "#7c3aed",
+          secondary: "#fff",
+        },
+      }),
+    [],
+  );
+
+  const onMissingInputToast = useCallback(
+    (message: string) =>
+      toast.error(message, {
+        iconTheme: {
+          primary: "#7c3aed",
+          secondary: "#fff",
+        },
+      }),
+    [],
+  );
+
   const generatePasswords = useCallback(
     async (pairs: Pair[], runOnBackground?: boolean) => {
       if (!masterPassword || !pairs.length) {
@@ -47,29 +69,7 @@ export const usePasswordGenerator = () => {
 
       return resultingPairs;
     },
-    [masterPassword],
-  );
-
-  const onCreatedPasswordToast = useCallback(
-    () =>
-      toast.success(TOAST_MESSAGES.success, {
-        iconTheme: {
-          primary: "#7c3aed",
-          secondary: "#fff",
-        },
-      }),
-    [],
-  );
-
-  const onMissingInputToast = useCallback(
-    (message: string) =>
-      toast.error(message, {
-        iconTheme: {
-          primary: "#7c3aed",
-          secondary: "#fff",
-        },
-      }),
-    [],
+    [masterPassword, onCreatedPasswordToast, onMissingInputToast],
   );
 
   return {

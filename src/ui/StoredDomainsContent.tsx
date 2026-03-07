@@ -1,7 +1,15 @@
 "use client";
 
-import { useRef, useState, useEffect, useTransition, useCallback } from "react";
+import {
+  useRef,
+  useState,
+  useEffect,
+  useTransition,
+  useCallback,
+  useDeferredValue,
+} from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { nanoid } from "nanoid";
 
 import { PasswordInput } from "./PasswordInput";
 import { PasswordConfigEntry } from "../utils/models";
@@ -16,12 +24,12 @@ import {
   usePasswordGenerator,
   useDebounce,
   Pair,
+  useViewTransition,
 } from "../hooks";
 import { StoredCard } from "./StoredCard";
 import { EntryDialog, initialDialogState } from "./EntryDialog";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import { toast } from "react-hot-toast";
-import { useViewTransition } from "../hooks/useViewTransition";
 
 type Props = {
   entries: PasswordConfigEntry[];
@@ -36,13 +44,14 @@ export const StoredDomainsContent = ({ entries }: Props) => {
   >(ActionType.add);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const { startViewTransition } = useViewTransition();
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") ?? "");
+  const deferredSearchQuery = useDeferredValue(searchQuery);
 
   const { generatePasswords, masterPassword, setMasterPassword } =
     usePasswordGenerator();
@@ -63,11 +72,13 @@ export const StoredDomainsContent = ({ entries }: Props) => {
       });
     };
     update();
-  }, [entries]);
+  }, [entries, generatePasswords, startViewTransition]);
 
   const debouncedUpdatePairsWithPasswords = useDebounce(async () => {
     const newPairs = await generatePasswords(entries, true);
-    setPairs(newPairs);
+    startViewTransition(() => {
+      setPairs(newPairs);
+    });
   }, 100);
 
   const updateSearchParams = useCallback(
@@ -93,20 +104,29 @@ export const StoredDomainsContent = ({ entries }: Props) => {
   };
 
   function openDialog() {
-    dialogRef.current?.showModal();
+    startViewTransition(() => {
+      dialogRef.current?.showModal();
+    });
   }
 
   function closeDialog() {
-    dialogRef.current?.close();
+    startViewTransition(() => {
+      dialogRef.current?.close();
+    });
   }
 
   const filteredPairs = pairs.filter((pair) =>
-    pair.url.toLowerCase().includes(searchQuery.toLowerCase()),
+    pair.url.toLowerCase().includes(deferredSearchQuery.toLowerCase()),
   );
 
   const handleConfirm = async () => {
-    closeDialog();
-    const optimisticEntry = { ...dialogState };
+    const optimisticEntry = {
+      ...dialogState,
+      id:
+        dialogMode === ActionType.add
+          ? `optimistic-${nanoid()}`
+          : dialogState.id,
+    };
 
     if (masterPassword) {
       const [entryWithPassword] = await generatePasswords(
@@ -117,13 +137,17 @@ export const StoredDomainsContent = ({ entries }: Props) => {
     }
 
     // Update local state immediately for instant feedback
-    if (dialogMode === ActionType.add) {
-      setPairs((prev) => [...prev, optimisticEntry]);
-    } else {
-      setPairs((prev) =>
-        prev.map((p) => (p.id === optimisticEntry.id ? optimisticEntry : p)),
-      );
-    }
+    startViewTransition(() => {
+      dialogRef.current?.close();
+      if (dialogMode === ActionType.add) {
+        setPairs((prev) => [...prev, optimisticEntry]);
+      } else {
+        setPairs((prev) =>
+          prev.map((p) => (p.id === optimisticEntry.id ? optimisticEntry : p)),
+        );
+      }
+      setDialogState(initialDialogState);
+    });
     isMutatingRef.current = true;
 
     startTransition(async () => {
@@ -141,7 +165,9 @@ export const StoredDomainsContent = ({ entries }: Props) => {
         );
         // Revert on error
         if (dialogMode === ActionType.add) {
-          setPairs((prev) => prev.filter((p) => p.id !== optimisticEntry.id));
+          startViewTransition(() => {
+            setPairs((prev) => prev.filter((p) => p.id !== optimisticEntry.id));
+          });
         } else {
           // Revert edit by restoring from entries prop
           const original = entries.find((e) => e.id === optimisticEntry.id);
@@ -151,16 +177,17 @@ export const StoredDomainsContent = ({ entries }: Props) => {
               true,
             );
             if (originalWithPassword) {
-              setPairs((prev) =>
-                prev.map((p) =>
-                  p.id === optimisticEntry.id ? originalWithPassword : p,
-                ),
-              );
+              startViewTransition(() => {
+                setPairs((prev) =>
+                  prev.map((p) =>
+                    p.id === optimisticEntry.id ? originalWithPassword : p,
+                  ),
+                );
+              });
             }
           }
         }
       }
-      setDialogState(initialDialogState);
     });
   };
 
@@ -174,7 +201,9 @@ export const StoredDomainsContent = ({ entries }: Props) => {
     }
 
     // Update local state immediately for instant feedback
-    setPairs((prev) => prev.filter((p) => p.id !== pair.id));
+    startViewTransition(() => {
+      setPairs((prev) => prev.filter((p) => p.id !== pair.id));
+    });
     isMutatingRef.current = true;
 
     startTransition(async () => {
@@ -183,13 +212,18 @@ export const StoredDomainsContent = ({ entries }: Props) => {
       } catch (error) {
         toast.error("Failed to remove entry");
         // Revert on error by adding the pair back
-        setPairs((prev) => [...prev, pair]);
+        startViewTransition(() => {
+          setPairs((prev) => [...prev, pair]);
+        });
       }
     });
   };
 
   return (
-    <div className="animate-slide-up mx-auto flex w-full max-w-full flex-col items-center gap-6 p-4 lg:max-w-[56rem] lg:gap-8 lg:p-8 xl:max-w-[64rem] xl:gap-10 xl:p-12 2xl:max-w-[72rem] 2xl:p-16">
+    <div
+      className="animate-slide-up mx-auto flex w-full max-w-full flex-col items-center gap-6 p-4 lg:max-w-[56rem] lg:gap-8 lg:p-8 xl:max-w-[64rem] xl:gap-10 xl:p-12 2xl:max-w-[72rem] 2xl:p-16"
+      style={{ viewTransitionName: "page-content" }}
+    >
       <section className="glass flex w-full flex-col gap-4 rounded-2xl p-4 lg:gap-5 lg:p-6 xl:gap-6 xl:p-8 2xl:p-10">
         <div className="flex flex-col gap-2 text-center lg:text-left">
           <h3 className="bg-gradient-to-r from-white to-white/60 bg-clip-text text-3xl font-bold text-transparent">
@@ -236,7 +270,10 @@ export const StoredDomainsContent = ({ entries }: Props) => {
         </div>
       </section>
 
-      <ul className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
+      <ul
+        className="grid w-full grid-cols-1 gap-4 transition-opacity duration-200 md:grid-cols-2 lg:grid-cols-2"
+        style={{ opacity: searchQuery === deferredSearchQuery ? 1 : 0.72 }}
+      >
         {filteredPairs.map((pair) => (
           <StoredCard
             key={pair.id}
