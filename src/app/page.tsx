@@ -1,5 +1,6 @@
 import { HomePageClient } from "./HomePageClient";
 import { DATABASE_TABLES } from "../utils/database.types";
+import { PasswordConfigEntry } from "../utils/models";
 import { createServerClient } from "../utils/supabase/server";
 
 export default async function Page() {
@@ -9,14 +10,14 @@ export default async function Page() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  let initialEntries: any[] = [];
+  let initialEntries: PasswordConfigEntry[] = [];
   if (user) {
     const { data, error } = await supabase
       .from(DATABASE_TABLES.configs)
       .select();
-    
-    if (!error) {
-      initialEntries = data;
+
+    if (!error && data) {
+      initialEntries = data as PasswordConfigEntry[];
     }
   }
 
