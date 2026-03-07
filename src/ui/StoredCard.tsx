@@ -11,12 +11,14 @@ export const StoredCard = ({
   editEntry,
   removeEntry,
   copyToClipboard,
+  allowMutations = true,
 }: {
   pair: Pair;
   isCopied: boolean;
   editEntry: () => void;
   removeEntry: () => void;
   copyToClipboard: (text: string) => void;
+  allowMutations?: boolean;
 }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { startViewTransition } = useViewTransition();
@@ -67,28 +69,32 @@ export const StoredCard = ({
         </span>
       </div>
 
-      <div className="flex items-center gap-2">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            editEntry();
-          }}
-          className="rounded-lg p-2 text-white/40 transition-all hover:bg-white/10 hover:text-white"
-          title="Edit"
-        >
-          <FaPencilAlt className="h-4 w-4" />
-        </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            removeEntry();
-          }}
-          className="rounded-lg p-2 text-white/40 transition-all hover:bg-red-500/10 hover:text-red-400"
-          title="Delete"
-        >
-          <FaTrash className="h-4 w-4" />
-        </button>
-      </div>
+      {allowMutations && (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              editEntry();
+            }}
+            className="rounded-lg p-2 text-white/40 transition-all hover:bg-white/10 hover:text-white"
+            title="Edit"
+            type="button"
+          >
+            <FaPencilAlt className="h-4 w-4" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              removeEntry();
+            }}
+            className="rounded-lg p-2 text-white/40 transition-all hover:bg-red-500/10 hover:text-red-400"
+            title="Delete"
+            type="button"
+          >
+            <FaTrash className="h-4 w-4" />
+          </button>
+        </div>
+      )}
     </li>
   );
 };

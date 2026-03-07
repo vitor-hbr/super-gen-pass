@@ -1,0 +1,23 @@
+{
+  "name": "Super Gen Pass",
+  "short_name": "SuperGenPass",
+  "description": "Generate and manage SuperGenPass configurations, including optional offline access on this device.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#111827",
+  "icons": [
+    {
+      "src": "/key.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48 32x32 16x16",
+      "type": "image/x-icon",
+      "purpose": "any"
+    }
+  ]
+}
