@@ -12,6 +12,28 @@ export interface Pair extends PasswordConfigEntry {
 export const usePasswordGenerator = () => {
   const [masterPassword, setMasterPassword] = useState("");
 
+  const onCreatedPasswordToast = useCallback(
+    () =>
+      toast.success(TOAST_MESSAGES.success, {
+        iconTheme: {
+          primary: "#7c3aed",
+          secondary: "#fff",
+        },
+      }),
+    [],
+  );
+
+  const onMissingInputToast = useCallback(
+    (message: string) =>
+      toast.error(message, {
+        iconTheme: {
+          primary: "#7c3aed",
+          secondary: "#fff",
+        },
+      }),
+    [],
+  );
+
   const maskPassword = (password: string) => {
     return password.replace(/./g, "*");
   };
@@ -47,29 +69,7 @@ export const usePasswordGenerator = () => {
 
       return resultingPairs;
     },
-    [masterPassword],
-  );
-
-  const onCreatedPasswordToast = useCallback(
-    () =>
-      toast.success(TOAST_MESSAGES.success, {
-        iconTheme: {
-          primary: "#7c3aed",
-          secondary: "#fff",
-        },
-      }),
-    [],
-  );
-
-  const onMissingInputToast = useCallback(
-    (message: string) =>
-      toast.error(message, {
-        iconTheme: {
-          primary: "#7c3aed",
-          secondary: "#fff",
-        },
-      }),
-    [],
+    [masterPassword, onCreatedPasswordToast, onMissingInputToast],
   );
 
   return {

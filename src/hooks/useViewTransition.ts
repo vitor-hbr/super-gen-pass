@@ -1,4 +1,4 @@
-import { startTransition, useTransition } from "react";
+import { useCallback, useTransition } from "react";
 import { flushSync } from "react-dom";
 
 /**
@@ -8,22 +8,25 @@ import { flushSync } from "react-dom";
 export const useViewTransition = () => {
   const [isPending, startReactTransition] = useTransition();
 
-  const startViewTransition = (callback: () => void) => {
-    if (!document.startViewTransition) {
-      startReactTransition(() => {
-        callback();
-      });
-      return;
-    }
-
-    document.startViewTransition(() => {
-      flushSync(() => {
+  const startViewTransition = useCallback(
+    (callback: () => void) => {
+      if (!document.startViewTransition) {
         startReactTransition(() => {
           callback();
         });
+        return;
+      }
+
+      document.startViewTransition(() => {
+        flushSync(() => {
+          startReactTransition(() => {
+            callback();
+          });
+        });
       });
-    });
-  };
+    },
+    [startReactTransition],
+  );
 
   return {
     isPending,

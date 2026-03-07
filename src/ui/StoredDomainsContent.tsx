@@ -63,7 +63,7 @@ export const StoredDomainsContent = ({ entries }: Props) => {
       });
     };
     update();
-  }, [entries]);
+  }, [entries, generatePasswords, startViewTransition]);
 
   const debouncedUpdatePairsWithPasswords = useDebounce(async () => {
     const newPairs = await generatePasswords(entries, true);
