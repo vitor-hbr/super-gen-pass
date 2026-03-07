@@ -56,30 +56,23 @@ export const StoredDomainsContent = ({ entries }: Props) => {
   const { generatePasswords, masterPassword, setMasterPassword } =
     usePasswordGenerator();
 
-  let [pairs, setPairs] = useState<Pair[]>(entries);
-  const isMutatingRef = useRef(false);
+  const [localEntries, setLocalEntries] =
+    useState<PasswordConfigEntry[]>(entries);
+  const [pairs, setPairs] = useState<Pair[]>(entries);
 
   useEffect(() => {
-    // Skip sync if we're in the middle of a local mutation
-    if (isMutatingRef.current) {
-      isMutatingRef.current = false;
-      return;
-    }
+    setLocalEntries(entries);
+  }, [entries]);
+
+  useEffect(() => {
     const update = async () => {
-      const newPairs = await generatePasswords(entries, true);
+      const newPairs = await generatePasswords(localEntries, true);
       startViewTransition(() => {
         setPairs(newPairs);
       });
     };
     update();
-  }, [entries, generatePasswords, startViewTransition]);
-
-  const debouncedUpdatePairsWithPasswords = useDebounce(async () => {
-    const newPairs = await generatePasswords(entries, true);
-    startViewTransition(() => {
-      setPairs(newPairs);
-    });
-  }, 100);
+  }, [localEntries, generatePasswords, startViewTransition]);
 
   const updateSearchParams = useCallback(
     (value: string) => {
@@ -100,7 +93,6 @@ export const StoredDomainsContent = ({ entries }: Props) => {
 
   const onMasterPasswordChange = (value: string) => {
     setMasterPassword(value);
-    debouncedUpdatePairsWithPasswords();
   };
 
   function openDialog() {
@@ -120,35 +112,48 @@ export const StoredDomainsContent = ({ entries }: Props) => {
   );
 
   const handleConfirm = async () => {
-    const optimisticEntry = {
+    const previousEntries = localEntries;
+    const previousPairs = pairs;
+
+    const optimisticEntry: PasswordConfigEntry = {
       ...dialogState,
       id:
         dialogMode === ActionType.add
           ? `optimistic-${nanoid()}`
           : dialogState.id,
     };
+    let optimisticPair: Pair = optimisticEntry;
 
     if (masterPassword) {
       const [entryWithPassword] = await generatePasswords(
         [optimisticEntry],
         true,
       );
-      if (entryWithPassword) Object.assign(optimisticEntry, entryWithPassword);
+      if (entryWithPassword) {
+        optimisticPair = entryWithPassword;
+      }
     }
 
     // Update local state immediately for instant feedback
     startViewTransition(() => {
       dialogRef.current?.close();
       if (dialogMode === ActionType.add) {
-        setPairs((prev) => [...prev, optimisticEntry]);
+        setLocalEntries((prev) => [...prev, optimisticEntry]);
+        setPairs((prev) => [...prev, optimisticPair]);
       } else {
+        setLocalEntries((prev) =>
+          prev.map((entry) =>
+            entry.id === optimisticEntry.id ? optimisticEntry : entry,
+          ),
+        );
         setPairs((prev) =>
-          prev.map((p) => (p.id === optimisticEntry.id ? optimisticEntry : p)),
+          prev.map((pair) =>
+            pair.id === optimisticPair.id ? optimisticPair : pair,
+          ),
         );
       }
       setDialogState(initialDialogState);
     });
-    isMutatingRef.current = true;
 
     startTransition(async () => {
       try {
@@ -163,30 +168,10 @@ export const StoredDomainsContent = ({ entries }: Props) => {
             ? "Failed to create entry"
             : "Failed to edit entry",
         );
-        // Revert on error
-        if (dialogMode === ActionType.add) {
-          startViewTransition(() => {
-            setPairs((prev) => prev.filter((p) => p.id !== optimisticEntry.id));
-          });
-        } else {
-          // Revert edit by restoring from entries prop
-          const original = entries.find((e) => e.id === optimisticEntry.id);
-          if (original) {
-            const [originalWithPassword] = await generatePasswords(
-              [original],
-              true,
-            );
-            if (originalWithPassword) {
-              startViewTransition(() => {
-                setPairs((prev) =>
-                  prev.map((p) =>
-                    p.id === optimisticEntry.id ? originalWithPassword : p,
-                  ),
-                );
-              });
-            }
-          }
-        }
+        startViewTransition(() => {
+          setLocalEntries(previousEntries);
+          setPairs(previousPairs);
+        });
       }
     });
   };
@@ -200,20 +185,23 @@ export const StoredDomainsContent = ({ entries }: Props) => {
       return;
     }
 
+    const previousEntries = localEntries;
+    const previousPairs = pairs;
+
     // Update local state immediately for instant feedback
     startViewTransition(() => {
+      setLocalEntries((prev) => prev.filter((entry) => entry.id !== pair.id));
       setPairs((prev) => prev.filter((p) => p.id !== pair.id));
     });
-    isMutatingRef.current = true;
 
     startTransition(async () => {
       try {
         await removeConfigEntry(pair.id);
       } catch (error) {
         toast.error("Failed to remove entry");
-        // Revert on error by adding the pair back
         startViewTransition(() => {
-          setPairs((prev) => [...prev, pair]);
+          setLocalEntries(previousEntries);
+          setPairs(previousPairs);
         });
       }
     });
