@@ -1,4 +1,4 @@
-import { useTransition } from "react";
+import { useCallback, useTransition } from "react";
 import { flushSync } from "react-dom";
 
 type ViewTransitionCapableDocument = Document & {
@@ -21,22 +21,25 @@ const getTransitionDocument = () =>
 export const useViewTransition = () => {
   const [isPending, startReactTransition] = useTransition();
 
-  const startViewTransition = (update: () => void) => {
-    const transitionDocument = getTransitionDocument();
+  const startViewTransition = useCallback(
+    (update: () => void) => {
+      const transitionDocument = getTransitionDocument();
 
-    if (!transitionDocument?.startViewTransition || prefersReducedMotion()) {
-      startReactTransition(() => {
-        update();
-      });
-      return;
-    }
+      if (!transitionDocument?.startViewTransition || prefersReducedMotion()) {
+        startReactTransition(() => {
+          update();
+        });
+        return;
+      }
 
-    transitionDocument.startViewTransition(() => {
-      flushSync(() => {
-        update();
+      transitionDocument.startViewTransition(() => {
+        flushSync(() => {
+          update();
+        });
       });
-    });
-  };
+    },
+    [startReactTransition],
+  );
 
   return {
     isPending,

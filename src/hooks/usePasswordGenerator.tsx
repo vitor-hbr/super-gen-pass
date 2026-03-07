@@ -12,10 +12,6 @@ export interface Pair extends PasswordConfigEntry {
 export const usePasswordGenerator = () => {
   const [masterPassword, setMasterPassword] = useState("");
 
-  const maskPassword = (password: string) => {
-    return password.replace(/./g, "*");
-  };
-
   const onCreatedPasswordToast = useCallback(
     () =>
       toast.success(TOAST_MESSAGES.success, {
@@ -37,6 +33,10 @@ export const usePasswordGenerator = () => {
       }),
     [],
   );
+
+  const maskPassword = (password: string) => {
+    return password.replace(/./g, "*");
+  };
 
   const generatePasswords = useCallback(
     async (pairs: Pair[], runOnBackground?: boolean) => {
