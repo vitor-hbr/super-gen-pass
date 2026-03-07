@@ -29,6 +29,7 @@ export const EntryDialog = forwardRef<HTMLDialogElement, Props>(
         className={
           "top-1/2 left-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-white/10 bg-[#1a1025] p-0 text-white shadow-2xl shadow-black/50"
         }
+        style={{ viewTransitionName: "entry-dialog" }}
       >
         <div className="flex flex-col gap-6 p-6">
           <div className="flex flex-col gap-1">

@@ -46,6 +46,7 @@ export const StoredCard = ({
           ? "border-green-500/50 shadow-[0_0_15px_rgba(34,197,94,0.2)] hover:border-green-500/50"
           : "border-white/5"
       }`}
+      style={{ viewTransitionName: `stored-card-${pair.id}` }}
     >
       <div className="flex min-w-0 flex-1 items-center gap-4">
         <button

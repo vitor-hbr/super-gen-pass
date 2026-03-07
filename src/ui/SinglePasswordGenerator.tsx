@@ -1,11 +1,16 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaKey, FaClipboard, FaClipboardCheck, FaCog } from "react-icons/fa";
 
 import { Checkbox } from "./Checkbox";
 import { PasswordInput } from "./PasswordInput";
-import { usePasswordGenerator, useClipboard, useDebounce } from "../hooks";
+import {
+  usePasswordGenerator,
+  useClipboard,
+  useDebounce,
+  useViewTransition,
+} from "../hooks";
 import { Pair } from "../hooks/usePasswordGenerator";
 
 export const SinglePasswordGenerator = () => {
@@ -25,16 +30,22 @@ export const SinglePasswordGenerator = () => {
   const [isGeneratedPasswordVisible, setIsGeneratedPasswordVisible] =
     useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const { startViewTransition } = useViewTransition();
 
   const currentPair = pairs[0]!;
 
   const handleGenerate = useDebounce(async (currentPairs: Pair[]) => {
     const newPairs = await generatePasswords(currentPairs);
-    setPairs(newPairs);
+    startViewTransition(() => {
+      setPairs(newPairs);
+    });
   }, 150);
 
   return (
-    <main className="glass flex w-full max-w-[400px] flex-col items-center justify-center rounded-2xl p-5 text-white transition-all duration-300 select-none hover:shadow-[0_0_40px_rgba(124,58,237,0.3)] lg:max-w-[480px] lg:p-6 xl:max-w-[560px] xl:p-8 2xl:max-w-[640px] 2xl:p-10">
+    <main
+      className="glass flex w-full max-w-[400px] flex-col items-center justify-center rounded-2xl p-5 text-white transition-all duration-300 select-none hover:shadow-[0_0_40px_rgba(124,58,237,0.3)] lg:max-w-[480px] lg:p-6 xl:max-w-[560px] xl:p-8 2xl:max-w-[640px] 2xl:p-10"
+      style={{ viewTransitionName: "generator-panel" }}
+    >
       <PasswordInput
         onChange={(value) => setMasterPassword(value)}
         value={masterPassword}
@@ -76,7 +87,11 @@ export const SinglePasswordGenerator = () => {
         ) : (
           <div className="flex flex-1 rounded-xl bg-white/5 ring-1 ring-white/10">
             <button
-              onClick={() => setIsGeneratedPasswordVisible((prev) => !prev)}
+              onClick={() =>
+                startViewTransition(() => {
+                  setIsGeneratedPasswordVisible((prev) => !prev);
+                })
+              }
               className="min-h-[44px] flex-1 truncate rounded-l-xl p-3 text-left text-sm text-violet-200 transition-colors hover:bg-white/5 hover:text-white lg:min-h-[48px] lg:text-[15px] xl:min-h-[52px] xl:text-base 2xl:min-h-[56px] 2xl:text-[17px]"
             >
               {isGeneratedPasswordVisible
@@ -97,7 +112,11 @@ export const SinglePasswordGenerator = () => {
           </div>
         )}
         <button
-          onClick={() => setShowSettings((s) => !s)}
+          onClick={() =>
+            startViewTransition(() => {
+              setShowSettings((s) => !s);
+            })
+          }
           className={`rounded-xl p-3 transition-all ${
             showSettings
               ? "bg-white/10 text-white"

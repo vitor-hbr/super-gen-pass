@@ -17,13 +17,13 @@ Change directory.
 ```sh
 $ cd super-gen-pass
 ```
-Install dependencies, make sure you have `nodejs`, `npm` or `yarn` installed (I used Yarn).
+Install dependencies with Bun.
 ```sh
-$ npm install or yarn
+$ bun install
 ```
 Run the app.
 ```sh
-$ npm dev or yarn dev
+$ bun run dev
 ```
 
 ### Usage 👌

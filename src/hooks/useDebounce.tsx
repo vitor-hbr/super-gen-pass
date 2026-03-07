@@ -6,29 +6,27 @@ export const useDebounce = <T extends (...args: any[]) => any>(
   waitFor: number = 250,
 ) => {
   const callbackRef = useRef(callback);
+  const debouncedFnRef = useRef<ReturnType<typeof debounce> | null>(null);
 
-  // Always keep the ref up to date with the latest callback
   useEffect(() => {
     callbackRef.current = callback;
   }, [callback]);
 
-  // Create debounced function once, stable reference
-  const debouncedFnRef = useRef<ReturnType<typeof debounce> | null>(null);
-
-  if (!debouncedFnRef.current) {
-    debouncedFnRef.current = debounce((...args: any[]) => {
+  useEffect(() => {
+    const debouncedFn = debounce((...args: Parameters<T>) => {
       callbackRef.current(...args);
     }, waitFor);
-  }
 
-  // Cleanup on unmount
-  useEffect(() => {
+    debouncedFnRef.current = debouncedFn;
+
     return () => {
-      debouncedFnRef.current?.cancel();
+      debouncedFn.cancel();
+      if (debouncedFnRef.current === debouncedFn) {
+        debouncedFnRef.current = null;
+      }
     };
-  }, []);
+  }, [waitFor]);
 
-  // Return a stable callback that calls the debounced function
   return useCallback((...args: Parameters<T>) => {
     debouncedFnRef.current?.(...args);
   }, []) as (...args: Parameters<T>) => void;

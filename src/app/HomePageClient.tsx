@@ -60,7 +60,10 @@ export function HomePageClient({ initialEntries }: HomePageClientProps) {
   // Show loading state while auth is being determined
   if (loading) {
     return (
-      <div className="flex flex-1 items-center justify-center">
+      <div
+        className="flex flex-1 items-center justify-center"
+        style={{ viewTransitionName: "page-content" }}
+      >
         <div className="animate-pulse text-white/50">Loading...</div>
       </div>
     );
@@ -71,7 +74,10 @@ export function HomePageClient({ initialEntries }: HomePageClientProps) {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-80px)] w-full flex-col items-center justify-center p-6 font-sans md:flex-row md:gap-12 lg:gap-24">
+    <div
+      className="flex min-h-[calc(100vh-80px)] w-full flex-col items-center justify-center p-6 font-sans md:flex-row md:gap-12 lg:gap-24"
+      style={{ viewTransitionName: "page-content" }}
+    >
       <div className="mb-12 flex w-full max-w-[500px] flex-col justify-center text-center md:mb-0 md:text-left">
         <div className="animate-slide-up [animation-duration:1s]">
           <h1 className="font-display animate-gradient-text bg-300% bg-gradient-to-r from-violet-400 via-fuchsia-300 to-violet-400 bg-clip-text pb-4 text-transparent">
