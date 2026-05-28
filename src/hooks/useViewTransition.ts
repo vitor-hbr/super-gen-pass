@@ -1,8 +1,14 @@
 import { useCallback, useTransition } from "react";
 import { flushSync } from "react-dom";
 
+type ViewTransition = {
+  finished: Promise<void>;
+  ready: Promise<void>;
+  updateCallbackDone: Promise<void>;
+};
+
 type ViewTransitionCapableDocument = Document & {
-  startViewTransition?: (callback: () => void) => void;
+  startViewTransition?: (callback: () => void) => ViewTransition;
 };
 
 const prefersReducedMotion = () =>
@@ -32,11 +38,22 @@ export const useViewTransition = () => {
         return;
       }
 
-      transitionDocument.startViewTransition(() => {
-        flushSync(() => {
-          update();
+      try {
+        transitionDocument.startViewTransition(() => {
+          flushSync(() => {
+            update();
+          });
         });
-      });
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          startReactTransition(() => {
+            update();
+          });
+          return;
+        }
+
+        throw error;
+      }
     },
     [startReactTransition],
   );

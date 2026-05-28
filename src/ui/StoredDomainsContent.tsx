@@ -3,10 +3,11 @@
 import {
   useRef,
   useState,
-  useEffect,
   useTransition,
   useCallback,
   useDeferredValue,
+  type Dispatch,
+  type SetStateAction,
 } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { PasswordInput } from "./PasswordInput";
@@ -33,6 +34,26 @@ type Props = {
   entries: PasswordConfigEntry[];
 };
 
+function usePropBackedState<T>(propValue: T) {
+  const [state, setState] = useState({ propValue, value: propValue });
+  const setValue: Dispatch<SetStateAction<T>> = useCallback((value) => {
+    setState((current) => ({
+      propValue: current.propValue,
+      value:
+        typeof value === "function"
+          ? (value as (previousValue: T) => T)(current.value)
+          : value,
+    }));
+  }, []);
+
+  if (state.propValue !== propValue) {
+    setState({ propValue, value: propValue });
+    return [propValue, setValue] as const;
+  }
+
+  return [state.value, setValue] as const;
+}
+
 export const StoredDomainsContent = ({ entries }: Props) => {
   const { clipboardText, copyToClipboard } = useClipboard();
   const [dialogState, setDialogState] =
@@ -55,12 +76,8 @@ export const StoredDomainsContent = ({ entries }: Props) => {
     usePasswordGenerator();
 
   const [localEntries, setLocalEntries] =
-    useState<PasswordConfigEntry[]>(entries);
-  const [pairs, setPairs] = useState<Pair[]>(entries);
-
-  useEffect(() => {
-    setLocalEntries(entries);
-  }, [entries]);
+    usePropBackedState<PasswordConfigEntry[]>(entries);
+  const [pairs, setPairs] = usePropBackedState<Pair[]>(entries);
 
   const updateSearchParams = useCallback(
     (value: string) => {
