@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Provider } from "@supabase/supabase-js";
 import { createClient } from "../utils/supabase/client";
 import { useState } from "react";
-import { toast } from "react-hot-toast";
+import { toast } from "./toast";
 import { useAuth } from "../contexts/AuthContext";
 import { useViewTransition } from "../hooks";
 

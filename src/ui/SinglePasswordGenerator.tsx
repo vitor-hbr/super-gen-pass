@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FaKey, FaClipboard, FaClipboardCheck, FaCog } from "react-icons/fa";
+import { FaKey, FaClipboard, FaClipboardCheck, FaCog } from "./icons";
 
 import { Checkbox } from "./Checkbox";
 import { PasswordInput } from "./PasswordInput";

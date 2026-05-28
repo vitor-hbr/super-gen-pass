@@ -1,7 +1,6 @@
 import { useState } from "react";
-import toast from "react-hot-toast";
 
-import { FaEye, FaEyeSlash, FaPencilAlt, FaTrash } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaPencilAlt, FaTrash } from "./icons";
 import { Pair } from "../hooks/usePasswordGenerator";
 import { useViewTransition } from "../hooks/useViewTransition";
 
@@ -10,13 +9,13 @@ export const StoredCard = ({
   isCopied,
   editEntry,
   removeEntry,
-  copyToClipboard,
+  generateAndCopyPassword,
 }: {
   pair: Pair;
   isCopied: boolean;
   editEntry: () => void;
   removeEntry: () => void;
-  copyToClipboard: (text: string) => void;
+  generateAndCopyPassword: () => void;
 }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { startViewTransition } = useViewTransition();
@@ -27,20 +26,9 @@ export const StoredCard = ({
     });
   };
 
-  const copyPassword = () => {
-    if (pair.password) copyToClipboard(pair.password);
-    else
-      toast.error("No password generated!", {
-        iconTheme: {
-          primary: "#7c3aed",
-          secondary: "#fff",
-        },
-      });
-  };
-
   return (
     <li
-      onClick={copyPassword}
+      onClick={generateAndCopyPassword}
       className={`glass-hover group animate-fade-in flex w-full cursor-pointer flex-row items-center justify-between gap-4 rounded-xl border bg-white/5 p-3 transition-all duration-300 hover:bg-white/10 lg:p-4 xl:p-5 ${
         isCopied
           ? "border-green-500/50 shadow-[0_0_15px_rgba(34,197,94,0.2)] hover:border-green-500/50"

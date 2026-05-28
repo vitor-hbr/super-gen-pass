@@ -9,8 +9,6 @@ import {
   useDeferredValue,
 } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { nanoid } from "nanoid";
-
 import { PasswordInput } from "./PasswordInput";
 import { PasswordConfigEntry } from "../utils/models";
 import {
@@ -18,7 +16,7 @@ import {
   removeConfigEntry,
   updateConfigEntry,
 } from "../app/actions";
-import { ActionType } from "../utils/constants";
+import { ActionType, TOAST_MESSAGES } from "../utils/constants";
 import {
   useClipboard,
   usePasswordGenerator,
@@ -28,8 +26,8 @@ import {
 } from "../hooks";
 import { StoredCard } from "./StoredCard";
 import { EntryDialog, initialDialogState } from "./EntryDialog";
-import { FaPlus, FaSearch } from "react-icons/fa";
-import { toast } from "react-hot-toast";
+import { FaPlus, FaSearch } from "./icons";
+import { toast } from "./toast";
 
 type Props = {
   entries: PasswordConfigEntry[];
@@ -63,16 +61,6 @@ export const StoredDomainsContent = ({ entries }: Props) => {
   useEffect(() => {
     setLocalEntries(entries);
   }, [entries]);
-
-  useEffect(() => {
-    const update = async () => {
-      const newPairs = await generatePasswords(localEntries, true);
-      startViewTransition(() => {
-        setPairs(newPairs);
-      });
-    };
-    update();
-  }, [localEntries, generatePasswords, startViewTransition]);
 
   const updateSearchParams = useCallback(
     (value: string) => {
@@ -119,20 +107,10 @@ export const StoredDomainsContent = ({ entries }: Props) => {
       ...dialogState,
       id:
         dialogMode === ActionType.add
-          ? `optimistic-${nanoid()}`
+          ? `optimistic-${crypto.randomUUID()}`
           : dialogState.id,
     };
-    let optimisticPair: Pair = optimisticEntry;
-
-    if (masterPassword) {
-      const [entryWithPassword] = await generatePasswords(
-        [optimisticEntry],
-        true,
-      );
-      if (entryWithPassword) {
-        optimisticPair = entryWithPassword;
-      }
-    }
+    const optimisticPair: Pair = optimisticEntry;
 
     // Update local state immediately for instant feedback
     startViewTransition(() => {
@@ -174,6 +152,27 @@ export const StoredDomainsContent = ({ entries }: Props) => {
         });
       }
     });
+  };
+
+  const handleGenerateAndCopy = async (pair: Pair) => {
+    if (!masterPassword) {
+      toast.error(TOAST_MESSAGES.missingInput);
+      return;
+    }
+
+    const [pairWithPassword] = await generatePasswords([pair], true);
+    if (!pairWithPassword?.password) {
+      return;
+    }
+
+    startViewTransition(() => {
+      setPairs((prev) =>
+        prev.map((currentPair) =>
+          currentPair.id === pair.id ? pairWithPassword : currentPair,
+        ),
+      );
+    });
+    copyToClipboard(pairWithPassword.password);
   };
 
   const handleRemove = async (pair: Pair) => {
@@ -273,7 +272,7 @@ export const StoredDomainsContent = ({ entries }: Props) => {
             }}
             removeEntry={() => handleRemove(pair)}
             isCopied={clipboardText === pair.password}
-            copyToClipboard={copyToClipboard}
+            generateAndCopyPassword={() => handleGenerateAndCopy(pair)}
           />
         ))}
       </ul>

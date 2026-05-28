@@ -1,8 +1,7 @@
 "use client";
 
-import clsx from "clsx";
 import { useState } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "./icons";
 
 type Props = {
   value: string;
@@ -21,10 +20,7 @@ export const PasswordInput = ({
 
   return (
     <span
-      className={clsx(
-        "group relative flex w-full rounded-xl border border-white/10 bg-white/5 transition-all focus-within:border-violet-500/50 focus-within:bg-white/10",
-        className,
-      )}
+      className={`group relative flex w-full rounded-xl border border-white/10 bg-white/5 transition-all focus-within:border-violet-500/50 focus-within:bg-white/10 ${className ?? ""}`}
     >
       <input
         type={isVisible ? "text" : "password"}

@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import toast from "react-hot-toast";
+import toast from "../ui/toast";
 import { generate } from "supergenpass-lib";
 import { TOAST_MESSAGES } from "../utils/constants";
 import { replaceAt } from "../utils/replaceAt";

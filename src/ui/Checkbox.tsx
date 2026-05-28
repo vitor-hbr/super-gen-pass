@@ -1,4 +1,4 @@
-import { FaCheck } from "react-icons/fa";
+import { FaCheck } from "./icons";
 
 export interface CheckboxProps {
   uuid: string;

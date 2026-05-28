@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { Nunito, Staatliches } from "next/font/google";
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "../ui/toast";
 
 import "../styles/globals.css";
 import { Footer } from "../ui";

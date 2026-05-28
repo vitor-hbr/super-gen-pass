@@ -3,7 +3,7 @@ import { Modal } from "./Modal";
 import { PasswordConfigEntry } from "../utils/models";
 import { ActionType } from "../utils/constants";
 import { Checkbox } from "./Checkbox";
-import { toast } from "react-hot-toast";
+import { toast } from "./toast";
 
 export const initialDialogState: PasswordConfigEntry = {
   id: "",
